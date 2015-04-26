@@ -1,0 +1,244 @@
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest1.o rbftest1.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+make[1]: Nothing to be done for `librbf.a'.
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+g++   rbftest1.o librbf.a ../rbf/librbf.a   -o rbftest1
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest2.o rbftest2.cc
+g++   rbftest2.o librbf.a ../rbf/librbf.a   -o rbftest2
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest3.o rbftest3.cc
+g++   rbftest3.o librbf.a ../rbf/librbf.a   -o rbftest3
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest4.o rbftest4.cc
+g++   rbftest4.o librbf.a ../rbf/librbf.a   -o rbftest4
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest5.o rbftest5.cc
+g++   rbftest5.o librbf.a ../rbf/librbf.a   -o rbftest5
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest6.o rbftest6.cc
+g++   rbftest6.o librbf.a ../rbf/librbf.a   -o rbftest6
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest7.o rbftest7.cc
+g++   rbftest7.o librbf.a ../rbf/librbf.a   -o rbftest7
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8.o rbftest8.cc
+g++   rbftest8.o librbf.a ../rbf/librbf.a   -o rbftest8
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8b.o rbftest8b.cc
+g++   rbftest8b.o librbf.a ../rbf/librbf.a   -o rbftest8b
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest9.o rbftest9.cc
+g++   rbftest9.o librbf.a ../rbf/librbf.a   -o rbftest9
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest10.o rbftest10.cc
+g++   rbftest10.o librbf.a ../rbf/librbf.a   -o rbftest10
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest11.o rbftest11.cc
+g++   rbftest11.o librbf.a ../rbf/librbf.a   -o rbftest11
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest12.o rbftest12.cc
+g++   rbftest12.o librbf.a ../rbf/librbf.a   -o rbftest12
+rm rmtest_create_tables rmtest_delete_tables rmtest_00 rmtest_01 rmtest_02 rmtest_03 rmtest_04 rmtest_05 rmtest_06 rmtest_07 rmtest_08 rmtest_09 rmtest_10 rmtest_11 rmtest_12 rmtest_13 rmtest_13b rmtest_14 rmtest_15 rmtest_extra_1 rmtest_extra_2 *.a *.o *~ 
+make -C ../rbf clean
+make[1]: Entering directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o rm.o rm.cc
+ar rv librm.a rm.o
+a - rm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_create_tables.o rmtest_create_tables.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2/codebase/rbf'
+g++   rmtest_create_tables.o librm.a ../rbf/librbf.a   -o rmtest_create_tables
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_delete_tables.o rmtest_delete_tables.cc
+g++   rmtest_delete_tables.o librm.a ../rbf/librbf.a   -o rmtest_delete_tables
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_00.o rmtest_00.cc
+g++   rmtest_00.o librm.a ../rbf/librbf.a   -o rmtest_00
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_01.o rmtest_01.cc
+g++   rmtest_01.o librm.a ../rbf/librbf.a   -o rmtest_01
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_02.o rmtest_02.cc
+g++   rmtest_02.o librm.a ../rbf/librbf.a   -o rmtest_02
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_03.o rmtest_03.cc
+g++   rmtest_03.o librm.a ../rbf/librbf.a   -o rmtest_03
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_04.o rmtest_04.cc
+g++   rmtest_04.o librm.a ../rbf/librbf.a   -o rmtest_04
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_05.o rmtest_05.cc
+g++   rmtest_05.o librm.a ../rbf/librbf.a   -o rmtest_05
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_06.o rmtest_06.cc
+g++   rmtest_06.o librm.a ../rbf/librbf.a   -o rmtest_06
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_07.o rmtest_07.cc
+g++   rmtest_07.o librm.a ../rbf/librbf.a   -o rmtest_07
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_08.o rmtest_08.cc
+g++   rmtest_08.o librm.a ../rbf/librbf.a   -o rmtest_08
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_09.o rmtest_09.cc
+g++   rmtest_09.o librm.a ../rbf/librbf.a   -o rmtest_09
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_10.o rmtest_10.cc
+g++   rmtest_10.o librm.a ../rbf/librbf.a   -o rmtest_10
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_11.o rmtest_11.cc
+g++   rmtest_11.o librm.a ../rbf/librbf.a   -o rmtest_11
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_12.o rmtest_12.cc
+g++   rmtest_12.o librm.a ../rbf/librbf.a   -o rmtest_12
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_13.o rmtest_13.cc
+g++   rmtest_13.o librm.a ../rbf/librbf.a   -o rmtest_13
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_13b.o rmtest_13b.cc
+g++   rmtest_13b.o librm.a ../rbf/librbf.a   -o rmtest_13b
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_14.o rmtest_14.cc
+g++   rmtest_14.o librm.a ../rbf/librbf.a   -o rmtest_14
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_15.o rmtest_15.cc
+g++   rmtest_15.o librm.a ../rbf/librbf.a   -o rmtest_15
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_extra_1.o rmtest_extra_1.cc
+g++   rmtest_extra_1.o librm.a ../rbf/librbf.a   -o rmtest_extra_1
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_extra_2.o rmtest_extra_2.cc
+g++   rmtest_extra_2.o librm.a ../rbf/librbf.a   -o rmtest_extra_2
+nextRID.pageNum = 0, nextRID.slotNum = 1
+return value = 0
+maxID : 1
+nextRID.pageNum = 0, nextRID.slotNum = 2
+return value = 0
+maxID : 2
+nextRID.pageNum = 0, nextRID.slotNum = 3
+return value = 0
+maxID : 3
+nextRID.pageNum = 0, nextRID.slotNum = 4
+return value = 0
+maxID : 4
+nextRID.pageNum = 0, nextRID.slotNum = 5
+return value = 0
+maxID : 5
+nextRID.pageNum = 0, nextRID.slotNum = 6
+return value = 0
+maxID : 6
+nextRID.pageNum = 1, nextRID.slotNum = 7
+return value = -1
+6
+
+***** RM TEST - Creating the Catalog and user tables *****
+In insertRecord--------------
+record length: 45
+In insertRecord--------------
+record length: 47
+In insertRecord--------------
+record length: 57
+In insertRecord--------------
+record length: 59
+In insertRecord--------------
+record length: 58
+In insertRecord--------------
+record length: 57
+In insertRecord--------------
+record length: 60
+In insertRecord--------------
+record length: 60
+In insertRecord--------------
+record length: 62
+In insertRecord--------------
+record length: 64
+Create Catalog Done!
+****Create Table tbl_employee ****
+In insertRecord--------------
+record length: 57
+In insertRecord--------------
+record length: 56
+In insertRecord--------------
+record length: 52
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+****Table Created: tbl_employee ****
+
+****Create Table tbl_employee2 ****
+In insertRecord--------------
+record length: 59
+In insertRecord--------------
+record length: 56
+In insertRecord--------------
+record length: 52
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+****Table Created: tbl_employee2 ****
+
+****Create Table tbl_employee3 ****
+In insertRecord--------------
+record length: 59
+In insertRecord--------------
+record length: 56
+In insertRecord--------------
+record length: 52
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+****Table Created: tbl_employee3 ****
+
+***** Creating a Large Table: tbl_employee4 *****
+In insertRecord--------------
+record length: 59
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 54
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+In insertRecord--------------
+record length: 55
+***** A Large Table: tbl_employee4 has created. *****
+

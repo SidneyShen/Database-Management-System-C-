@@ -1,0 +1,327 @@
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest_extra_1 rbftest_private_1 rbftest_private_1b rbftest_private_2 rbftest_private_3 rbftest_private_4 test1 test3 test7 test8 test8b test9 test9rids test9sizes test11 test11rids test_extra_1a test_extra_1b test_private_1 test_private_1b test_private_2 test_private_3a test_private_3b test_private_3a_rids test_private_3b_rids   *.a *.o *~
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest1.o rbftest1.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project1/codebase/rbf'
+make[1]: Nothing to be done for `librbf.a'.
+make[1]: Leaving directory `/home/sidney/workspace/test222/project1/codebase/rbf'
+g++   rbftest1.o librbf.a ../rbf/librbf.a   -o rbftest1
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest2.o rbftest2.cc
+g++   rbftest2.o librbf.a ../rbf/librbf.a   -o rbftest2
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest3.o rbftest3.cc
+g++   rbftest3.o librbf.a ../rbf/librbf.a   -o rbftest3
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest4.o rbftest4.cc
+g++   rbftest4.o librbf.a ../rbf/librbf.a   -o rbftest4
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest5.o rbftest5.cc
+g++   rbftest5.o librbf.a ../rbf/librbf.a   -o rbftest5
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest6.o rbftest6.cc
+g++   rbftest6.o librbf.a ../rbf/librbf.a   -o rbftest6
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest7.o rbftest7.cc
+g++   rbftest7.o librbf.a ../rbf/librbf.a   -o rbftest7
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8.o rbftest8.cc
+g++   rbftest8.o librbf.a ../rbf/librbf.a   -o rbftest8
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8b.o rbftest8b.cc
+g++   rbftest8b.o librbf.a ../rbf/librbf.a   -o rbftest8b
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest9.o rbftest9.cc
+g++   rbftest9.o librbf.a ../rbf/librbf.a   -o rbftest9
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest10.o rbftest10.cc
+g++   rbftest10.o librbf.a ../rbf/librbf.a   -o rbftest10
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest11.o rbftest11.cc
+g++   rbftest11.o librbf.a ../rbf/librbf.a   -o rbftest11
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest12.o rbftest12.cc
+g++   rbftest12.o librbf.a ../rbf/librbf.a   -o rbftest12
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_extra_1.o rbftest_extra_1.cc
+g++   rbftest_extra_1.o librbf.a ../rbf/librbf.a   -o rbftest_extra_1
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_1.o rbftest_private_1.cc
+g++   rbftest_private_1.o librbf.a ../rbf/librbf.a   -o rbftest_private_1
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_1b.o rbftest_private_1b.cc
+g++   rbftest_private_1b.o librbf.a ../rbf/librbf.a   -o rbftest_private_1b
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_2.o rbftest_private_2.cc
+g++   rbftest_private_2.o librbf.a ../rbf/librbf.a   -o rbftest_private_2
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_3.o rbftest_private_3.cc
+g++   rbftest_private_3.o librbf.a ../rbf/librbf.a   -o rbftest_private_3
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_4.o rbftest_private_4.cc
+g++   rbftest_private_4.o librbf.a ../rbf/librbf.a   -o rbftest_private_4
+
+***** In RBF Test Case 1 *****
+[PASS] Test Case 1 Passed!
+
+
+***** In RBF Test Case 2 *****
+[PASS] Test Case 2 Passed!
+
+
+***** In RBF Test Case 3 *****
+[PASS] Test Case 3 Passed!
+
+
+***** In RBF Test Case 4 *****
+before:R W A - 0 0 0 after:R W A - 00 1
+[PASS] Test Case 4 Passed!
+
+
+***** In RBF Test Case 5 *****
+before:R W A - 0 0 0 after:R W A - 10 0
+[PASS] Test Case 5 Passed!
+
+
+***** In RBF Test Case 6 *****
+before:R W A - 0 0 0 after:R W A - 11 0
+[PASS] Test Case 6 Passed!
+
+
+***** In RBF Test Case 7 *****
+50 Pages have been successfully appended!
+before:R W A - 0 0 0 after:R W A - 00 50
+The data in 35th page is correct!
+[PASS] Test Case 7 Passed!
+
+
+***** In RBF Test Case 8 *****
+Insert Data:
+EmpName: Peters ； Age: 24 ； Height: 170.1 ； Salary: 5000 ； 
+Returned Data:
+EmpName: Peters ； Age: 24 ； Height: 170.1 ； Salary: 5000 ； 
+[PASS] Test Case 8 Passed!
+
+
+***** In RBF Test Case 8b *****
+Insert Data:
+EmpName: Peters ； Age: 24 ； Height: 170.1 ； Salary: NULL ； 
+Returned Data:
+EmpName: Peters ； Age: 24 ； Height: 170.1 ； Salary: NULL ； 
+[PASS] Test Case 8b Passed!
+
+
+***** In RBF Test Case 9 *****
+Attr Name: attr0 Attr Type: 2 Attr Len: 50
+Attr Name: attr1 Attr Type: 0 Attr Len: 4
+Attr Name: attr2 Attr Type: 1 Attr Len: 4
+Attr Name: attr3 Attr Type: 2 Attr Len: 50
+Attr Name: attr4 Attr Type: 0 Attr Len: 4
+Attr Name: attr5 Attr Type: 1 Attr Len: 4
+Attr Name: attr6 Attr Type: 2 Attr Len: 50
+Attr Name: attr7 Attr Type: 0 Attr Len: 4
+Attr Name: attr8 Attr Type: 1 Attr Len: 4
+Attr Name: attr9 Attr Type: 2 Attr Len: 50
+Attr Name: attr10 Attr Type: 0 Attr Len: 4
+Attr Name: attr11 Attr Type: 1 Attr Len: 4
+Attr Name: attr12 Attr Type: 2 Attr Len: 50
+Attr Name: attr13 Attr Type: 0 Attr Len: 4
+Attr Name: attr14 Attr Type: 1 Attr Len: 4
+Attr Name: attr15 Attr Type: 2 Attr Len: 50
+Attr Name: attr16 Attr Type: 0 Attr Len: 4
+Attr Name: attr17 Attr Type: 1 Attr Len: 4
+Attr Name: attr18 Attr Type: 2 Attr Len: 50
+Attr Name: attr19 Attr Type: 0 Attr Len: 4
+Attr Name: attr20 Attr Type: 1 Attr Len: 4
+Attr Name: attr21 Attr Type: 2 Attr Len: 50
+Attr Name: attr22 Attr Type: 0 Attr Len: 4
+Attr Name: attr23 Attr Type: 1 Attr Len: 4
+Attr Name: attr24 Attr Type: 2 Attr Len: 50
+Attr Name: attr25 Attr Type: 0 Attr Len: 4
+Attr Name: attr26 Attr Type: 1 Attr Len: 4
+Attr Name: attr27 Attr Type: 2 Attr Len: 50
+Attr Name: attr28 Attr Type: 0 Attr Len: 4
+Attr Name: attr29 Attr Type: 1 Attr Len: 4
+
+RID #0: 1, 1
+RID #1000: 92, 13
+Sizes #0: 134
+Sizes #1000: 134
+[PASS] Test Case 9 Passed!
+
+
+***** In RBF Test Case 10 *****
+loaded RID #0: 1, 1
+loaded RID #1000: 92, 13
+loaded Sizes #0: 134
+loaded Sizes #1000: 134
+Returned Data - 0th: 
+attr0: a ； attr1: 0 ； attr2: 1 ； attr3: a ； attr4: 0 ； attr5: 1 ； attr6: a ； attr7: 0 ； attr8: 1 ； attr9: a ； attr10: 0 ； attr11: 1 ； attr12: a ； attr13: 0 ； attr14: 1 ； attr15: a ； attr16: 0 ； attr17: 1 ； attr18: a ； attr19: 0 ； attr20: 1 ； attr21: a ； attr22: 0 ； attr23: 1 ； attr24: a ； attr25: 0 ； attr26: 1 ； attr27: a ； attr28: 0 ； attr29: 1 ； 
+Returned Data - 1000th: 
+attr0: m ； attr1: 1000 ； attr2: 1001 ； attr3: m ； attr4: 1000 ； attr5: 1001 ； attr6: m ； attr7: 1000 ； attr8: 1001 ； attr9: m ； attr10: 1000 ； attr11: 1001 ； attr12: m ； attr13: 1000 ； attr14: 1001 ； attr15: m ； attr16: 1000 ； attr17: 1001 ； attr18: m ； attr19: 1000 ； attr20: 1001 ； attr21: m ； attr22: 1000 ； attr23: 1001 ； attr24: m ； attr25: 1000 ； attr26: 1001 ； attr27: m ； attr28: 1000 ； attr29: 1001 ； 
+[PASS] Test Case 10 Passed!
+
+
+***** In RBF Test Case 11 *****
+Attr Name: attr0 Attr Type: 0 Attr Len: 4
+Attr Name: attr1 Attr Type: 1 Attr Len: 4
+Attr Name: attr2 Attr Type: 2 Attr Len: 60
+Attr Name: attr3 Attr Type: 0 Attr Len: 4
+Attr Name: attr4 Attr Type: 1 Attr Len: 4
+Attr Name: attr5 Attr Type: 2 Attr Len: 60
+Attr Name: attr6 Attr Type: 0 Attr Len: 4
+Attr Name: attr7 Attr Type: 1 Attr Len: 4
+Attr Name: attr8 Attr Type: 2 Attr Len: 60
+Attr Name: attr9 Attr Type: 0 Attr Len: 4
+Attr Name: attr10 Attr Type: 1 Attr Len: 4
+Attr Name: attr11 Attr Type: 2 Attr Len: 60
+Attr Name: attr12 Attr Type: 0 Attr Len: 4
+Attr Name: attr13 Attr Type: 1 Attr Len: 4
+Attr Name: attr14 Attr Type: 2 Attr Len: 60
+Attr Name: attr15 Attr Type: 0 Attr Len: 4
+Attr Name: attr16 Attr Type: 1 Attr Len: 4
+Attr Name: attr17 Attr Type: 2 Attr Len: 60
+Attr Name: attr18 Attr Type: 0 Attr Len: 4
+Attr Name: attr19 Attr Type: 1 Attr Len: 4
+Attr Name: attr20 Attr Type: 2 Attr Len: 60
+Attr Name: attr21 Attr Type: 0 Attr Len: 4
+Attr Name: attr22 Attr Type: 1 Attr Len: 4
+Attr Name: attr23 Attr Type: 2 Attr Len: 60
+Attr Name: attr24 Attr Type: 0 Attr Len: 4
+Attr Name: attr25 Attr Type: 1 Attr Len: 4
+Attr Name: attr26 Attr Type: 2 Attr Len: 60
+Attr Name: attr27 Attr Type: 0 Attr Len: 4
+Attr Name: attr28 Attr Type: 1 Attr Len: 4
+Attr Name: attr29 Attr Type: 2 Attr Len: 60
+RID #0: 1, 1
+RID #1000: 108, 6
+RID #2000: 217, 1
+RID #3000: 317, 9
+RID #4000: 433, 6
+RID #5000: 542, 1
+RID #6000: 642, 9
+RID #7000: 758, 6
+RID #8000: 867, 1
+RID #9000: 967, 9
+[PASS] Test Case 11 Passed!
+
+
+***** In RBF Test Case 12 *****
+Attr Name: attr0 Attr Type: 0 Attr Len: 4
+Attr Name: attr1 Attr Type: 1 Attr Len: 4
+Attr Name: attr2 Attr Type: 2 Attr Len: 60
+Attr Name: attr3 Attr Type: 0 Attr Len: 4
+Attr Name: attr4 Attr Type: 1 Attr Len: 4
+Attr Name: attr5 Attr Type: 2 Attr Len: 60
+Attr Name: attr6 Attr Type: 0 Attr Len: 4
+Attr Name: attr7 Attr Type: 1 Attr Len: 4
+Attr Name: attr8 Attr Type: 2 Attr Len: 60
+Attr Name: attr9 Attr Type: 0 Attr Len: 4
+Attr Name: attr10 Attr Type: 1 Attr Len: 4
+Attr Name: attr11 Attr Type: 2 Attr Len: 60
+Attr Name: attr12 Attr Type: 0 Attr Len: 4
+Attr Name: attr13 Attr Type: 1 Attr Len: 4
+Attr Name: attr14 Attr Type: 2 Attr Len: 60
+Attr Name: attr15 Attr Type: 0 Attr Len: 4
+Attr Name: attr16 Attr Type: 1 Attr Len: 4
+Attr Name: attr17 Attr Type: 2 Attr Len: 60
+Attr Name: attr18 Attr Type: 0 Attr Len: 4
+Attr Name: attr19 Attr Type: 1 Attr Len: 4
+Attr Name: attr20 Attr Type: 2 Attr Len: 60
+Attr Name: attr21 Attr Type: 0 Attr Len: 4
+Attr Name: attr22 Attr Type: 1 Attr Len: 4
+Attr Name: attr23 Attr Type: 2 Attr Len: 60
+Attr Name: attr24 Attr Type: 0 Attr Len: 4
+Attr Name: attr25 Attr Type: 1 Attr Len: 4
+Attr Name: attr26 Attr Type: 2 Attr Len: 60
+Attr Name: attr27 Attr Type: 0 Attr Len: 4
+Attr Name: attr28 Attr Type: 1 Attr Len: 4
+Attr Name: attr29 Attr Type: 2 Attr Len: 60
+loaded RID #0: 1, 1
+loaded RID #1000: 108, 6
+loaded RID #2000: 217, 1
+loaded RID #3000: 317, 9
+loaded RID #4000: 433, 6
+loaded RID #5000: 542, 1
+loaded RID #6000: 642, 9
+loaded RID #7000: 758, 6
+loaded RID #8000: 867, 1
+loaded RID #9000: 967, 9
+[PASS] Test Case 12 Passed!
+
+****In RBF Test Case Extra 1****
+2000 / 10000 records are inserted.
+4000 / 10000 records are inserted.
+6000 / 10000 records are inserted.
+8000 / 10000 records are inserted.
+File 1 size: 3780608
+File 2 size: 3780608
+**** RBF Test Extra 1 Finished. The result will be examined. *****
+
+***** In RBF Test Case Private 1 *****
+recordDescriptorForTweetMessage.size() = 6
+Insert Data:
+tweetid: 101 ； userid: 1 ； sender_location: NULL ； send_time: 1013.45 ； referred_topics: NULL ； message_text: Finding shortcut_menu was easy. ； 
+Returned Data:
+tweetid: 101 ； userid: 1 ； sender_location: NULL ； send_time: 1013.45 ； referred_topics: NULL ； message_text: Finding shortcut_menu was easy. ； 
+test_private_1 - file size:8192
+***** Test Case Private 1 Finished. The result will be examined. *****
+
+***** In RBF Test Case Private 1b *****
+Insert Data:
+attr0: NULL ； attr1: 5 ； attr2: 6 ； attr3: FFFFFF ； attr4: 5 ； attr5: 6 ； attr6: FFFFFF ； attr7: 5 ； attr8: NULL ； attr9: FFFFFF ； attr10: 5 ； attr11: 6 ； attr12: FFFFFF ； attr13: 5 ； attr14: 6 ； attr15: FFFFFF ； attr16: NULL ； attr17: 6 ； 
+Returned Data:
+attr0: NULL ； attr1: 5 ； attr2: 6 ； attr3: FFFFFF ； attr4: 5 ； attr5: 6 ； attr6: FFFFFF ； attr7: 5 ； attr8: NULL ； attr9: FFFFFF ； attr10: 5 ； attr11: 6 ； attr12: FFFFFF ； attr13: 5 ； attr14: 6 ； attr15: FFFFFF ； attr16: NULL ； attr17: 6 ； 
+test_private_1b - file size:8192
+***** Test Case Private 1b Finished! The result will be examined. *****
+
+***** In RBF Test Case Private 2 *****
+test_private_2 - file size:12288
+***** [PASS] Test Case Private 2 Passed! *****
+
+
+***** In RBF Test Case Private 3 ****
+test_private_3a: 5000 / 50000 records inserted so far.
+test_private_3a: 10000 / 50000 records inserted so far.
+test_private_3a: 15000 / 50000 records inserted so far.
+test_private_3a: 20000 / 50000 records inserted so far.
+test_private_3a: 25000 / 50000 records inserted so far.
+test_private_3a: 30000 / 50000 records inserted so far.
+test_private_3a: 35000 / 50000 records inserted so far.
+test_private_3a: 40000 / 50000 records inserted so far.
+test_private_3a: 45000 / 50000 records inserted so far.
+inserting 50000 records done.
+
+test_private_3b: 5000 / 50000 records inserted so far.
+test_private_3b: 10000 / 50000 records inserted so far.
+test_private_3b: 15000 / 50000 records inserted so far.
+test_private_3b: 20000 / 50000 records inserted so far.
+test_private_3b: 25000 / 50000 records inserted so far.
+test_private_3b: 30000 / 50000 records inserted so far.
+test_private_3b: 35000 / 50000 records inserted so far.
+test_private_3b: 40000 / 50000 records inserted so far.
+test_private_3b: 45000 / 50000 records inserted so far.
+inserting 50000 records done.
+
+test_private_3a - file size:18886656
+test_private_3b - file size:23904256
+test_private_3a - RID #0: 1, 1
+test_private_3a - RID #10000: 874, 11
+test_private_3a - RID #20000: 1798, 10
+test_private_3a - RID #30000: 2711, 18
+test_private_3a - RID #40000: 3631, 8
+
+
+test_private_3b - RID #0: 1, 1
+test_private_3b - RID #10000: 944, 12
+test_private_3b - RID #20000: 1795, 10
+test_private_3b - RID #30000: 3021, 8
+test_private_3b - RID #40000: 4128, 10
+***** Test Case Private 3 Finished. The result will be examined. *****
+
+
+***** In RBF Test Case Private 4 *****
+test_private_3a - loaded RID #0: 1, 1
+test_private_3a - loaded RID #10000: 874, 11
+test_private_3a - loaded RID #20000: 1798, 10
+test_private_3a - loaded RID #30000: 2711, 18
+test_private_3a - loaded RID #40000: 3631, 8
+test_private_3a - loading RID done.
+test_private_3a - file size:18886656
+
+test_private_3b - loaded RID #0: 1, 1
+test_private_3b - loaded RID #10000: 944, 12
+test_private_3b - loaded RID #20000: 1795, 10
+test_private_3b - loaded RID #30000: 3021, 8
+test_private_3b - loaded RID #40000: 4128, 10
+test_private_3b - loading RID done.
+test_private_3b - file size:23904256
+
+***** [PASS] RBF Test Case Private 4 Passed *****
