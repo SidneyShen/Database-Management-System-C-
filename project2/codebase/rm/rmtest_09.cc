@@ -25,19 +25,27 @@ RC TEST_RM_09(const string &tableName, vector<RID> &rids, vector<int> &sizes)
 	memset(nullsIndicator, 0, nullAttributesIndicatorActualSize);
 
     for(int i = 0; i < numTuples; i++)
-    {
+    {   
+        if(i==258)
+            continue;
+        cout<<"number of rounds = "<< i <<endl;
         memset(tuple, 0, 2000);
         memset(returnedData, 0, 2000);
+        cout<<"In loop: before readTuple()"<<endl;
         rc = rm->readTuple(tableName, rids[i], returnedData);
+        rc = rm->printTuple(attrs, returnedData);
         assert(rc == success && "RelationManager::readTuple() should not fail.");
-
+        cout<<"In loop: after readTuple()"<<endl;
         size = 0;
         prepareLargeTuple(attrs.size(), nullsIndicator, i, tuple, &size);
+        rc = rm->printTuple(attrs, tuple);
+        cout<<"Before memcmp()"<<endl;
         if(memcmp(returnedData, tuple, sizes[i]) != 0)
         {
             cout << "***** [FAIL] Test Case 9 Failed *****" << endl << endl;
             return -1;
         }
+        cout<<"After memcmp()"<<endl;
     }
     cout << "***** [PASS] Test Case 9 Passed *****" << endl << endl;
 

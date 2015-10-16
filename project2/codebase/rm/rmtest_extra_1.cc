@@ -58,6 +58,7 @@ RC RM_TEST_EXTRA_1(const string &tableName, const int nameLength, const string &
     free(returnedData);
 
     cout << "***** [PASS] Extra Credit Test Case 1 passed *****" << endl;
+    rm->deleteTable("tbl_employee100");
     return success;
 }
 

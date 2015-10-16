@@ -85,6 +85,7 @@ int RBFTest_private_4(RecordBasedFileManager *rbfm) {
 
 	// Compare records from the disk read with the record created from the method
 	for (int i = 0; i < numRecords; i++) {
+		cout<<"in for loop!"<<endl;
 		memset(record, 0, 2000);
 		memset(returnedData, 0, 2000);
 		rc = rbfm->readRecord(fileHandle, recordDescriptorForTwitterUser, rids[i], returnedData);

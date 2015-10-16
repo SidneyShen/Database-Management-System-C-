@@ -26,10 +26,10 @@ RC TEST_RM_7(const string &tableName)
     rc = rm->scan(tableName, "", NO_OP, NULL, attributes, rmsi);
     assert(rc == success && "RelationManager::scan() should not fail.");
     int ageReturned = 0;
-    
+    cout<<"In Test 07 Before while loop!!!!!!!"<<endl;
     while(rmsi.getNextTuple(rid, returnedData) != RM_EOF)
     {
-        // cout << "Returned Age: " << *(int *)((char *)returnedData+1) << endl;
+        cout << "Returned Age: " << *(int *)((char *)returnedData+1) << endl;
     	ageReturned = *(int *)((char *)returnedData+1);
         if (ages.find(ageReturned) == ages.end())
         {

@@ -56,6 +56,7 @@ RC RM_TEST_EXTRA_2(const string &tableName, const int nameLength, const string &
         cout << "***** [PASS] Extra Credit Test Case 2 Passed *****" << endl << endl;
         free(tuple);
         free(returnedData);
+        rm->deleteTable("tbl_employee200");
         return success;
     }
 

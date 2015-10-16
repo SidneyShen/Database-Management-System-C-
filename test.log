@@ -1,4 +1,56 @@
-rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest_extra_1 rbftest_private_1 rbftest_private_1b rbftest_private_2 rbftest_private_3 rbftest_private_4 test1 test3 test7 test8 test8b test9 test9rids test9sizes test11 test11rids test_extra_1a test_extra_1b test_private_1 test_private_1b test_private_2 test_private_3a test_private_3b test_private_3a_rids test_private_3b_rids   *.a *.o *~
+Archive:  project2-16.zip
+   creating: project2-16/
+   creating: project2-16/codebase/
+  inflating: project2-16/codebase/readme.txt  
+  inflating: project2-16/codebase/project2-report.txt  
+  inflating: project2-16/codebase/makefile.inc  
+   creating: project2-16/codebase/rm/
+  inflating: project2-16/codebase/rm/test_util.h  
+  inflating: project2-16/codebase/rm/rmtest_extra_2.cc  
+  inflating: project2-16/codebase/rm/rmtest_extra_1.cc  
+  inflating: project2-16/codebase/rm/rmtest_delete_tables.cc  
+  inflating: project2-16/codebase/rm/rmtest_create_tables.cc  
+  inflating: project2-16/codebase/rm/rmtest_15.cc  
+  inflating: project2-16/codebase/rm/rmtest_14.cc  
+  inflating: project2-16/codebase/rm/rmtest_13b.cc  
+  inflating: project2-16/codebase/rm/rmtest_13.cc  
+  inflating: project2-16/codebase/rm/rmtest_12.cc  
+  inflating: project2-16/codebase/rm/rmtest_11.cc  
+  inflating: project2-16/codebase/rm/rmtest_10.cc  
+  inflating: project2-16/codebase/rm/rmtest_09.cc  
+  inflating: project2-16/codebase/rm/rmtest_08.cc  
+  inflating: project2-16/codebase/rm/rmtest_07.cc  
+  inflating: project2-16/codebase/rm/rmtest_06.cc  
+  inflating: project2-16/codebase/rm/rmtest_05.cc  
+  inflating: project2-16/codebase/rm/rmtest_04.cc  
+  inflating: project2-16/codebase/rm/rmtest_03.cc  
+  inflating: project2-16/codebase/rm/rmtest_02.cc  
+  inflating: project2-16/codebase/rm/rmtest_01.cc  
+  inflating: project2-16/codebase/rm/rmtest_00.cc  
+  inflating: project2-16/codebase/rm/rm.h  
+  inflating: project2-16/codebase/rm/makefile  
+  inflating: project2-16/codebase/rm/rm.cc  
+   creating: project2-16/codebase/rbf/
+  inflating: project2-16/codebase/rbf/pfm.cc  
+  inflating: project2-16/codebase/rbf/test_util.h  
+  inflating: project2-16/codebase/rbf/rbftest9.cc  
+  inflating: project2-16/codebase/rbf/rbftest8b.cc  
+  inflating: project2-16/codebase/rbf/rbftest8.cc  
+  inflating: project2-16/codebase/rbf/rbftest7.cc  
+  inflating: project2-16/codebase/rbf/rbftest6.cc  
+  inflating: project2-16/codebase/rbf/rbftest5.cc  
+  inflating: project2-16/codebase/rbf/rbftest4.cc  
+  inflating: project2-16/codebase/rbf/rbftest3.cc  
+  inflating: project2-16/codebase/rbf/rbftest2.cc  
+  inflating: project2-16/codebase/rbf/rbftest12.cc  
+  inflating: project2-16/codebase/rbf/rbftest11.cc  
+  inflating: project2-16/codebase/rbf/rbftest10.cc  
+  inflating: project2-16/codebase/rbf/rbftest1.cc  
+  inflating: project2-16/codebase/rbf/rbfm.h  
+  inflating: project2-16/codebase/rbf/rbfm.cc  
+  inflating: project2-16/codebase/rbf/pfm.h  
+  inflating: project2-16/codebase/rbf/makefile  
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
 g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
 ar rv librbf.a pfm.o
 a - pfm.o
@@ -7,9 +59,9 @@ ar rv librbf.a rbfm.o
 a - rbfm.o
 g++  -Wall -I.. -g -std=c++0x    -c -o rbftest1.o rbftest1.cc
 make -C ../rbf librbf.a
-make[1]: Entering directory `/home/sidney/workspace/test222/project1/codebase/rbf'
+make[1]: Entering directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
 make[1]: Nothing to be done for `librbf.a'.
-make[1]: Leaving directory `/home/sidney/workspace/test222/project1/codebase/rbf'
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
 g++   rbftest1.o librbf.a ../rbf/librbf.a   -o rbftest1
 g++  -Wall -I.. -g -std=c++0x    -c -o rbftest2.o rbftest2.cc
 g++   rbftest2.o librbf.a ../rbf/librbf.a   -o rbftest2
@@ -35,407 +87,1024 @@ g++  -Wall -I.. -g -std=c++0x    -c -o rbftest11.o rbftest11.cc
 g++   rbftest11.o librbf.a ../rbf/librbf.a   -o rbftest11
 g++  -Wall -I.. -g -std=c++0x    -c -o rbftest12.o rbftest12.cc
 g++   rbftest12.o librbf.a ../rbf/librbf.a   -o rbftest12
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_extra_1.o rbftest_extra_1.cc
-g++   rbftest_extra_1.o librbf.a ../rbf/librbf.a   -o rbftest_extra_1
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_1.o rbftest_private_1.cc
-g++   rbftest_private_1.o librbf.a ../rbf/librbf.a   -o rbftest_private_1
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_1b.o rbftest_private_1b.cc
-g++   rbftest_private_1b.o librbf.a ../rbf/librbf.a   -o rbftest_private_1b
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_2.o rbftest_private_2.cc
-g++   rbftest_private_2.o librbf.a ../rbf/librbf.a   -o rbftest_private_2
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_3.o rbftest_private_3.cc
-g++   rbftest_private_3.o librbf.a ../rbf/librbf.a   -o rbftest_private_3
-g++  -Wall -I.. -g -std=c++0x    -c -o rbftest_private_4.o rbftest_private_4.cc
-g++   rbftest_private_4.o librbf.a ../rbf/librbf.a   -o rbftest_private_4
+rm rmtest_create_tables rmtest_delete_tables rmtest_00 rmtest_01 rmtest_02 rmtest_03 rmtest_04 rmtest_05 rmtest_06 rmtest_07 rmtest_08 rmtest_09 rmtest_10 rmtest_11 rmtest_12 rmtest_13 rmtest_13b rmtest_14 rmtest_15 rmtest_extra_1 rmtest_extra_2 *.a *.o *~ 
+make -C ../rbf clean
+make[1]: Entering directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o rm.o rm.cc
+ar rv librm.a rm.o
+a - rm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_create_tables.o rmtest_create_tables.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+make[1]: Leaving directory `/home/sidney/workspace/test222/project2-16/codebase/rbf'
+g++   rmtest_create_tables.o librm.a ../rbf/librbf.a   -o rmtest_create_tables
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_delete_tables.o rmtest_delete_tables.cc
+g++   rmtest_delete_tables.o librm.a ../rbf/librbf.a   -o rmtest_delete_tables
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_00.o rmtest_00.cc
+g++   rmtest_00.o librm.a ../rbf/librbf.a   -o rmtest_00
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_01.o rmtest_01.cc
+g++   rmtest_01.o librm.a ../rbf/librbf.a   -o rmtest_01
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_02.o rmtest_02.cc
+g++   rmtest_02.o librm.a ../rbf/librbf.a   -o rmtest_02
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_03.o rmtest_03.cc
+g++   rmtest_03.o librm.a ../rbf/librbf.a   -o rmtest_03
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_04.o rmtest_04.cc
+g++   rmtest_04.o librm.a ../rbf/librbf.a   -o rmtest_04
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_05.o rmtest_05.cc
+g++   rmtest_05.o librm.a ../rbf/librbf.a   -o rmtest_05
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_06.o rmtest_06.cc
+g++   rmtest_06.o librm.a ../rbf/librbf.a   -o rmtest_06
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_07.o rmtest_07.cc
+g++   rmtest_07.o librm.a ../rbf/librbf.a   -o rmtest_07
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_08.o rmtest_08.cc
+g++   rmtest_08.o librm.a ../rbf/librbf.a   -o rmtest_08
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_09.o rmtest_09.cc
+g++   rmtest_09.o librm.a ../rbf/librbf.a   -o rmtest_09
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_10.o rmtest_10.cc
+g++   rmtest_10.o librm.a ../rbf/librbf.a   -o rmtest_10
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_11.o rmtest_11.cc
+g++   rmtest_11.o librm.a ../rbf/librbf.a   -o rmtest_11
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_12.o rmtest_12.cc
+g++   rmtest_12.o librm.a ../rbf/librbf.a   -o rmtest_12
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_13.o rmtest_13.cc
+g++   rmtest_13.o librm.a ../rbf/librbf.a   -o rmtest_13
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_13b.o rmtest_13b.cc
+g++   rmtest_13b.o librm.a ../rbf/librbf.a   -o rmtest_13b
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_14.o rmtest_14.cc
+g++   rmtest_14.o librm.a ../rbf/librbf.a   -o rmtest_14
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_15.o rmtest_15.cc
+g++   rmtest_15.o librm.a ../rbf/librbf.a   -o rmtest_15
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_extra_1.o rmtest_extra_1.cc
+g++   rmtest_extra_1.o librm.a ../rbf/librbf.a   -o rmtest_extra_1
+g++  -Wall -I.. -g -std=c++0x    -c -o rmtest_extra_2.o rmtest_extra_2.cc
+g++   rmtest_extra_2.o librm.a ../rbf/librbf.a   -o rmtest_extra_2
 
-***** In RBF Test Case 1 *****
-[PASS] Test Case 1 Passed!
+***** RM TEST - Creating the Catalog and user tables *****
+****Create Table tbl_employee ****
+****Table Created: tbl_employee ****
+
+****Create Table tbl_employee2 ****
+****Table Created: tbl_employee2 ****
+
+****Create Table tbl_employee3 ****
+****Table Created: tbl_employee3 ****
+
+***** Creating a Large Table: tbl_employee4 *****
+***** A Large Table: tbl_employee4 has created. *****
 
 
-***** In RBF Test Case 2 *****
-[PASS] Test Case 2 Passed!
+***** In RM Test Case 0 *****
+1. Attr Name: EmpName Attr Type: 2 Attr Len: 30
+2. Attr Name: Age Attr Type: 0 Attr Len: 4
+3. Attr Name: Height Attr Type: 1 Attr Len: 4
+4. Attr Name: Salary Attr Type: 0 Attr Len: 4
+***** [PASS] RM Test Case 0 passed *****
+
+***** In RM Test Case 1 *****
+The tuple to be inserted:
 
 
-***** In RBF Test Case 3 *****
-[PASS] Test Case 3 Passed!
 
 
-***** In RBF Test Case 4 *****
-before:R W A - 0 0 0 after:R W A - 00 1
-[PASS] Test Case 4 Passed!
-
-
-***** In RBF Test Case 5 *****
-before:R W A - 0 0 0 after:R W A - 10 0
-[PASS] Test Case 5 Passed!
-
-
-***** In RBF Test Case 6 *****
-before:R W A - 0 0 0 after:R W A - 11 0
-[PASS] Test Case 6 Passed!
-
-
-***** In RBF Test Case 7 *****
-50 Pages have been successfully appended!
-before:R W A - 0 0 0 after:R W A - 00 50
-The data in 35th page is correct!
-[PASS] Test Case 7 Passed!
-
-
-***** In RBF Test Case 8 *****
-Insert Data:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 EmpName 2 Peters
 Age 0 24
 Height 1 170.1
 Salary 0 5000
-Returned Data:
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+The tuple returned:
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 EmpName 2 Peters
 Age 0 24
 Height 1 170.1
 Salary 0 5000
-[PASS] Test Case 8 Passed!
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-***** In RBF Test Case 8b *****
-Insert Data:
-EmpName 2 Peters
-Age 0 24
-Height 1 170.1
-Salary 0 NULL
+
+
+**** [PASS] RM Test Case 1 passed *****
+
+
+***** In RM Test Case 2 *****
+The tuple to be inserted:
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+EmpName 2 Victor
+Age 0 22
+Height 1 180.2
+Salary 0 6000
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+***** [PASS] RM Test Case 2 Passed *****
+
+
+***** In RM Test Case 3****
+Original RID:  0 1
+Inserted Data:
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+EmpName 2 Thomas
+Age 0 28
+Height 1 187.3
+Salary 0 4000
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+Updated data:
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+EmpName 2 Newman
+Age 0 28
+Height 1 187.3
+Salary 0 100
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
 Returned Data:
-EmpName 2 Peters
-Age 0 24
-Height 1 170.1
-Salary 0 NULL
-[PASS] Test Case 8b Passed!
 
 
-***** In RBF Test Case 9 *****
-Attr Name: attr0 Attr Type: 2 Attr Len: 50
-Attr Name: attr1 Attr Type: 0 Attr Len: 4
-Attr Name: attr2 Attr Type: 1 Attr Len: 4
-Attr Name: attr3 Attr Type: 2 Attr Len: 50
-Attr Name: attr4 Attr Type: 0 Attr Len: 4
-Attr Name: attr5 Attr Type: 1 Attr Len: 4
-Attr Name: attr6 Attr Type: 2 Attr Len: 50
-Attr Name: attr7 Attr Type: 0 Attr Len: 4
-Attr Name: attr8 Attr Type: 1 Attr Len: 4
-Attr Name: attr9 Attr Type: 2 Attr Len: 50
-Attr Name: attr10 Attr Type: 0 Attr Len: 4
-Attr Name: attr11 Attr Type: 1 Attr Len: 4
-Attr Name: attr12 Attr Type: 2 Attr Len: 50
-Attr Name: attr13 Attr Type: 0 Attr Len: 4
-Attr Name: attr14 Attr Type: 1 Attr Len: 4
-Attr Name: attr15 Attr Type: 2 Attr Len: 50
-Attr Name: attr16 Attr Type: 0 Attr Len: 4
-Attr Name: attr17 Attr Type: 1 Attr Len: 4
-Attr Name: attr18 Attr Type: 2 Attr Len: 50
-Attr Name: attr19 Attr Type: 0 Attr Len: 4
-Attr Name: attr20 Attr Type: 1 Attr Len: 4
-Attr Name: attr21 Attr Type: 2 Attr Len: 50
-Attr Name: attr22 Attr Type: 0 Attr Len: 4
-Attr Name: attr23 Attr Type: 1 Attr Len: 4
-Attr Name: attr24 Attr Type: 2 Attr Len: 50
-Attr Name: attr25 Attr Type: 0 Attr Len: 4
-Attr Name: attr26 Attr Type: 1 Attr Len: 4
-Attr Name: attr27 Attr Type: 2 Attr Len: 50
-Attr Name: attr28 Attr Type: 0 Attr Len: 4
-Attr Name: attr29 Attr Type: 1 Attr Len: 4
-
-RID #0: 0, 0
-RID #1000: 130, 3
-Sizes #0: 134
-Sizes #1000: 134
-[PASS] Test Case 9 Passed!
 
 
-***** In RBF Test Case 10 *****
-loaded RID #0: 0, 0
-loaded RID #1000: 130, 3
-loaded Sizes #0: 134
-loaded Sizes #1000: 134
-Returned Data - 0th: 
-attr0 2 a
-attr1 0 0
-attr2 1 1
-attr3 2 a
-attr4 0 0
-attr5 1 1
-attr6 2 a
-attr7 0 0
-attr8 1 1
-attr9 2 a
-attr10 0 0
-attr11 1 1
-attr12 2 a
-attr13 0 0
-attr14 1 1
-attr15 2 a
-attr16 0 0
-attr17 1 1
-attr18 2 a
-attr19 0 0
-attr20 1 1
-attr21 2 a
-attr22 0 0
-attr23 1 1
-attr24 2 a
-attr25 0 0
-attr26 1 1
-attr27 2 a
-attr28 0 0
-attr29 1 1
-Returned Data - 1000th: 
-attr0 2 m
-attr1 0 1000
-attr2 1 1001
-attr3 2 m
-attr4 0 1000
-attr5 1 1001
-attr6 2 m
-attr7 0 1000
-attr8 1 1001
-attr9 2 m
-attr10 0 1000
-attr11 1 1001
-attr12 2 m
-attr13 0 1000
-attr14 1 1001
-attr15 2 m
-attr16 0 1000
-attr17 1 1001
-attr18 2 m
-attr19 0 1000
-attr20 1 1001
-attr21 2 m
-attr22 0 1000
-attr23 1 1001
-attr24 2 m
-attr25 0 1000
-attr26 1 1001
-attr27 2 m
-attr28 0 1000
-attr29 1 1001
-[PASS] Test Case 10 Passed!
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+EmpName 2 Newman
+Age 0 28
+Height 1 187.3
+Salary 0 100
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-***** In RBF Test Case 11 *****
-Attr Name: attr0 Attr Type: 0 Attr Len: 4
-Attr Name: attr1 Attr Type: 1 Attr Len: 4
-Attr Name: attr2 Attr Type: 2 Attr Len: 60
-Attr Name: attr3 Attr Type: 0 Attr Len: 4
-Attr Name: attr4 Attr Type: 1 Attr Len: 4
-Attr Name: attr5 Attr Type: 2 Attr Len: 60
-Attr Name: attr6 Attr Type: 0 Attr Len: 4
-Attr Name: attr7 Attr Type: 1 Attr Len: 4
-Attr Name: attr8 Attr Type: 2 Attr Len: 60
-Attr Name: attr9 Attr Type: 0 Attr Len: 4
-Attr Name: attr10 Attr Type: 1 Attr Len: 4
-Attr Name: attr11 Attr Type: 2 Attr Len: 60
-Attr Name: attr12 Attr Type: 0 Attr Len: 4
-Attr Name: attr13 Attr Type: 1 Attr Len: 4
-Attr Name: attr14 Attr Type: 2 Attr Len: 60
-Attr Name: attr15 Attr Type: 0 Attr Len: 4
-Attr Name: attr16 Attr Type: 1 Attr Len: 4
-Attr Name: attr17 Attr Type: 2 Attr Len: 60
-Attr Name: attr18 Attr Type: 0 Attr Len: 4
-Attr Name: attr19 Attr Type: 1 Attr Len: 4
-Attr Name: attr20 Attr Type: 2 Attr Len: 60
-Attr Name: attr21 Attr Type: 0 Attr Len: 4
-Attr Name: attr22 Attr Type: 1 Attr Len: 4
-Attr Name: attr23 Attr Type: 2 Attr Len: 60
-Attr Name: attr24 Attr Type: 0 Attr Len: 4
-Attr Name: attr25 Attr Type: 1 Attr Len: 4
-Attr Name: attr26 Attr Type: 2 Attr Len: 60
-Attr Name: attr27 Attr Type: 0 Attr Len: 4
-Attr Name: attr28 Attr Type: 1 Attr Len: 4
-Attr Name: attr29 Attr Type: 2 Attr Len: 60
-RID #0: 0, 0
-RID #1000: 142, 4
-RID #2000: 285, 8
-RID #3000: 430, 2
-RID #4000: 572, 4
-RID #5000: 715, 8
-RID #6000: 860, 2
-RID #7000: 1002, 4
-RID #8000: 1145, 8
-RID #9000: 1290, 2
-[PASS] Test Case 11 Passed!
 
 
-***** In RBF Test Case 12 *****
-Attr Name: attr0 Attr Type: 0 Attr Len: 4
-Attr Name: attr1 Attr Type: 1 Attr Len: 4
-Attr Name: attr2 Attr Type: 2 Attr Len: 60
-Attr Name: attr3 Attr Type: 0 Attr Len: 4
-Attr Name: attr4 Attr Type: 1 Attr Len: 4
-Attr Name: attr5 Attr Type: 2 Attr Len: 60
-Attr Name: attr6 Attr Type: 0 Attr Len: 4
-Attr Name: attr7 Attr Type: 1 Attr Len: 4
-Attr Name: attr8 Attr Type: 2 Attr Len: 60
-Attr Name: attr9 Attr Type: 0 Attr Len: 4
-Attr Name: attr10 Attr Type: 1 Attr Len: 4
-Attr Name: attr11 Attr Type: 2 Attr Len: 60
-Attr Name: attr12 Attr Type: 0 Attr Len: 4
-Attr Name: attr13 Attr Type: 1 Attr Len: 4
-Attr Name: attr14 Attr Type: 2 Attr Len: 60
-Attr Name: attr15 Attr Type: 0 Attr Len: 4
-Attr Name: attr16 Attr Type: 1 Attr Len: 4
-Attr Name: attr17 Attr Type: 2 Attr Len: 60
-Attr Name: attr18 Attr Type: 0 Attr Len: 4
-Attr Name: attr19 Attr Type: 1 Attr Len: 4
-Attr Name: attr20 Attr Type: 2 Attr Len: 60
-Attr Name: attr21 Attr Type: 0 Attr Len: 4
-Attr Name: attr22 Attr Type: 1 Attr Len: 4
-Attr Name: attr23 Attr Type: 2 Attr Len: 60
-Attr Name: attr24 Attr Type: 0 Attr Len: 4
-Attr Name: attr25 Attr Type: 1 Attr Len: 4
-Attr Name: attr26 Attr Type: 2 Attr Len: 60
-Attr Name: attr27 Attr Type: 0 Attr Len: 4
-Attr Name: attr28 Attr Type: 1 Attr Len: 4
-Attr Name: attr29 Attr Type: 2 Attr Len: 60
-loaded RID #0: 0, 0
-loaded RID #1000: 142, 4
-loaded RID #2000: 285, 8
-loaded RID #3000: 430, 2
-loaded RID #4000: 572, 4
-loaded RID #5000: 715, 8
-loaded RID #6000: 860, 2
-loaded RID #7000: 1002, 4
-loaded RID #8000: 1145, 8
-loaded RID #9000: 1290, 2
-[PASS] Test Case 12 Passed!
-
-****In RBF Test Case Extra 1****
-2000 / 10000 records are inserted.
-4000 / 10000 records are inserted.
-6000 / 10000 records are inserted.
-8000 / 10000 records are inserted.
-File 1 size: 4247552
-File 2 size: 4247552
-**** RBF Test Extra 1 Finished. The result will be examined. *****
-
-***** In RBF Test Case Private 1 *****
-recordDescriptorForTweetMessage.size() = 6
-Insert Data:
-tweetid 0 101
-userid 0 1
-sender_location 1 NULL
-send_time 1 1013.45
-referred_topics 2 NULL
-message_text 2 Finding shortcut_menu was easy.
-Returned Data:
-tweetid 0 101
-userid 0 1
-sender_location 1 NULL
-send_time 1 1013.45
-referred_topics 2 NULL
-message_text 2 Finding shortcut_menu was easy.
-test_private_1 - file size:4096
-***** Test Case Private 1 Finished. The result will be examined. *****
-
-***** In RBF Test Case Private 1b *****
-Insert Data:
-attr0 2 NULL
-attr1 0 5
-attr2 1 6
-attr3 2 FFFFFF
-attr4 0 5
-attr5 1 6
-attr6 2 FFFFFF
-attr7 0 5
-attr8 1 NULL
-attr9 2 FFFFFF
-attr10 0 5
-attr11 1 6
-attr12 2 FFFFFF
-attr13 0 5
-attr14 1 6
-attr15 2 FFFFFF
-attr16 0 NULL
-attr17 1 6
-Returned Data:
-attr0 2 NULL
-attr1 0 5
-attr2 1 6
-attr3 2 FFFFFF
-attr4 0 5
-attr5 1 6
-attr6 2 FFFFFF
-attr7 0 5
-attr8 1 NULL
-attr9 2 FFFFFF
-attr10 0 5
-attr11 1 6
-attr12 2 FFFFFF
-attr13 0 5
-attr14 1 6
-attr15 2 FFFFFF
-attr16 0 NULL
-attr17 1 6
-test_private_1b - file size:4096
-***** Test Case Private 1b Finished! The result will be examined. *****
-
-***** In RBF Test Case Private 2 *****
-test_private_2 - file size:8192
-***** [PASS] Test Case Private 2 Passed! *****
+***** [PASS] RM Test Case 3 Passed *****
 
 
-***** In RBF Test Case Private 3 ****
-test_private_3a: 5000 / 50000 records inserted so far.
-test_private_3a: 10000 / 50000 records inserted so far.
-test_private_3a: 15000 / 50000 records inserted so far.
-test_private_3a: 20000 / 50000 records inserted so far.
-test_private_3a: 25000 / 50000 records inserted so far.
-test_private_3a: 30000 / 50000 records inserted so far.
-test_private_3a: 35000 / 50000 records inserted so far.
-test_private_3a: 40000 / 50000 records inserted so far.
-test_private_3a: 45000 / 50000 records inserted so far.
-inserting 50000 records done.
-
-test_private_3b: 5000 / 50000 records inserted so far.
-test_private_3b: 10000 / 50000 records inserted so far.
-test_private_3b: 15000 / 50000 records inserted so far.
-test_private_3b: 20000 / 50000 records inserted so far.
-test_private_3b: 25000 / 50000 records inserted so far.
-test_private_3b: 30000 / 50000 records inserted so far.
-test_private_3b: 35000 / 50000 records inserted so far.
-test_private_3b: 40000 / 50000 records inserted so far.
-test_private_3b: 45000 / 50000 records inserted so far.
-inserting 50000 records done.
-
-test_private_3a - file size:21200896
-test_private_3b - file size:25808896
-test_private_3a - RID #0: 0, 0
-test_private_3a - RID #10000: 1036, 1
-test_private_3a - RID #20000: 2071, 1
-test_private_3a - RID #30000: 3106, 1
-test_private_3a - RID #40000: 4140, 5
+***** In RM Test Case 4 *****
+Salary: 9000
+***** [PASS] RM Test case 4 Passed
 
 
-test_private_3b - RID #0: 0, 0
-test_private_3b - RID #10000: 1263, 4
-test_private_3b - RID #20000: 2523, 1
-test_private_3b - RID #30000: 3782, 1
-test_private_3b - RID #40000: 5041, 1
-***** Test Case Private 3 Finished. The result will be examined. *****
+***** In RM Test Case 5 *****
+***** [PASS] Test Case 5 Passed *****
 
 
-***** In RBF Test Case Private 4 *****
-test_private_3a - loaded RID #0: 0, 0
-test_private_3a - loaded RID #10000: 1036, 1
-test_private_3a - loaded RID #20000: 2071, 1
-test_private_3a - loaded RID #30000: 3106, 1
-test_private_3a - loaded RID #40000: 4140, 5
-test_private_3a - loading RID done.
-test_private_3a - file size:21200896
+***** In RM Test Case 6 *****
+***** [PASS] Test Case 6 Passed *****
 
-test_private_3b - loaded RID #0: 0, 0
-test_private_3b - loaded RID #10000: 1263, 4
-test_private_3b - loaded RID #20000: 2523, 1
-test_private_3b - loaded RID #30000: 3782, 1
-test_private_3b - loaded RID #40000: 5041, 1
-test_private_3b - loading RID done.
-test_private_3b - file size:25808896
 
-***** [PASS] RBF Test Case Private 4 Passed *****
+***** In RM Test Case 7 *****
+***** [PASS] Test Case 7 Passed *****
+
+
+***** In RM Test Case 8 *****
+***** [PASS] Test Case 8 Passed *****
+
+***** In RM Test case 9 *****
+***** [PASS] Test Case 9 Passed *****
+
+
+***** In RM Test case 10 *****
+***** [PASS] Test Case 10 Passed *****
+
+
+***** In RM Test Case 11 *****
+***** [PASS] Test Case 11 Passed *****
+
+
+***** In RM Test case 12 *****
+Real Value: 1007
+String size: 7
+VarChar Value: sssssss
+Integer Value: 1006
+
+Real Value: 1197
+String size: 47
+VarChar Value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Integer Value: 1196
+
+Real Value: 1397
+String size: 47
+VarChar Value: sssssssssssssssssssssssssssssssssssssssssssssss
+Integer Value: 1396
+
+Real Value: 1597
+String size: 47
+VarChar Value: kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+Integer Value: 1596
+
+Real Value: 1797
+String size: 47
+VarChar Value: ccccccccccccccccccccccccccccccccccccccccccccccc
+Integer Value: 1796
+
+Total number of tuples: 1000
+
+***** [PASS] Test Case 12 Passed *****
+
+****Create Table tbl_b_employee4 ****
+****Table Created: tbl_b_employee4 ****
+
+
+***** In RM Test Case 13 *****
+***** [PASS] Test Case 13 Passed *****
+
+****Create Table tbl_b_employee5 ****
+****Table Created: tbl_b_employee5 ****
+
+
+***** In RM Test Case 13B *****
+***** [PASS] Test Case 13B Passed *****
+
+
+***** In RM Test Case 14 *****
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 1
+table-name 2 Tables
+file-name 2 Tables
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+table-name 2 Columns
+file-name 2 Columns
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 7
+table-name 2 tbl_b_employee4
+file-name 2 tbl_b_employee4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 4
+table-name 2 tbl_employee2
+file-name 2 tbl_employee2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+table-name 2 tbl_employee4
+file-name 2 tbl_employee4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+***** Test Case 14 Finished. We will manually check your implementation. *****
+
+***** In RM Test Case 15 *****
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 1
+column-name 2 table-id
+column-type 0 0
+column-length 0 4
+column-position 0 1
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 1
+column-name 2 table-name
+column-type 0 2
+column-length 0 50
+column-position 0 2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 1
+column-name 2 file-name
+column-type 0 2
+column-length 0 50
+column-position 0 3
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+column-name 2 table-id
+column-type 0 0
+column-length 0 4
+column-position 0 1
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+column-name 2 column-name
+column-type 0 2
+column-length 0 50
+column-position 0 2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+column-name 2 column-type
+column-type 0 0
+column-length 0 4
+column-position 0 3
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+column-name 2 column-length
+column-type 0 0
+column-length 0 4
+column-position 0 4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 2
+column-name 2 column-position
+column-type 0 0
+column-length 0 4
+column-position 0 5
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 7
+column-name 2 EmpName
+column-type 0 2
+column-length 0 30
+column-position 0 1
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 7
+column-name 2 Age
+column-type 0 0
+column-length 0 4
+column-position 0 2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 7
+column-name 2 Height
+column-type 0 1
+column-length 0 4
+column-position 0 3
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 7
+column-name 2 Salary
+column-type 0 0
+column-length 0 4
+column-position 0 4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 4
+column-name 2 EmpName
+column-type 0 2
+column-length 0 30
+column-position 0 1
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 4
+column-name 2 Age
+column-type 0 0
+column-length 0 4
+column-position 0 2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 4
+column-name 2 Height
+column-type 0 1
+column-length 0 4
+column-position 0 3
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 4
+column-name 2 Salary
+column-type 0 0
+column-length 0 4
+column-position 0 4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr0
+column-type 0 2
+column-length 0 50
+column-position 0 1
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr1
+column-type 0 0
+column-length 0 4
+column-position 0 2
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr2
+column-type 0 1
+column-length 0 4
+column-position 0 3
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr3
+column-type 0 2
+column-length 0 50
+column-position 0 4
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr4
+column-type 0 0
+column-length 0 4
+column-position 0 5
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr5
+column-type 0 1
+column-length 0 4
+column-position 0 6
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr6
+column-type 0 2
+column-length 0 50
+column-position 0 7
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr7
+column-type 0 0
+column-length 0 4
+column-position 0 8
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr8
+column-type 0 1
+column-length 0 4
+column-position 0 9
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr9
+column-type 0 2
+column-length 0 50
+column-position 0 10
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr10
+column-type 0 0
+column-length 0 4
+column-position 0 11
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr11
+column-type 0 1
+column-length 0 4
+column-position 0 12
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr12
+column-type 0 2
+column-length 0 50
+column-position 0 13
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr13
+column-type 0 0
+column-length 0 4
+column-position 0 14
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr14
+column-type 0 1
+column-length 0 4
+column-position 0 15
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr15
+column-type 0 2
+column-length 0 50
+column-position 0 16
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr16
+column-type 0 0
+column-length 0 4
+column-position 0 17
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr17
+column-type 0 1
+column-length 0 4
+column-position 0 18
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr18
+column-type 0 2
+column-length 0 50
+column-position 0 19
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr19
+column-type 0 0
+column-length 0 4
+column-position 0 20
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr20
+column-type 0 1
+column-length 0 4
+column-position 0 21
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr21
+column-type 0 2
+column-length 0 50
+column-position 0 22
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr22
+column-type 0 0
+column-length 0 4
+column-position 0 23
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr23
+column-type 0 1
+column-length 0 4
+column-position 0 24
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr24
+column-type 0 2
+column-length 0 50
+column-position 0 25
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr25
+column-type 0 0
+column-length 0 4
+column-position 0 26
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr26
+column-type 0 1
+column-length 0 4
+column-position 0 27
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr27
+column-type 0 2
+column-length 0 50
+column-position 0 28
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr28
+column-type 0 0
+column-length 0 4
+column-position 0 29
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+table-id 0 6
+column-name 2 attr29
+column-type 0 1
+column-length 0 4
+column-position 0 30
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+***** Test Case 15 Finished. We will manually check your implementation. *****

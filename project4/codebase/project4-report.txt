@@ -1,0 +1,116 @@
+###############################################
+                  QE Level
+###############################################
+
+
+================Filter Class===================
+
+--------------getNextTuple()-------------------
+
+We first use input iterator to read in a record data.
+Then fetch out the left-hand side attribute and right-hand side value from condition.
+If the corresponding attribute of record satisfy the condition, we return this record data.
+Else read in next record data and repeat checking the condition until the end.
+
+--------------getAttributes()------------------
+
+Return the input iterator's attributes.
+
+
+
+
+================Project Class===================
+
+--------------getNextTuple()-------------------
+
+We first use input iterator to read in a record data.
+The scan each attribute of the record.
+If the attribute matches the project attribute.
+	If the attribute is not null, 
+		set the null-descriptor corresponding position to 0 
+		concatenate the attribute data as the part of the output data 
+	Else
+		set the null-descriptor corresponding position to 1
+Else
+	read in next record and repeat the above steps.
+
+
+--------------getAttributes()------------------
+
+Return the vector of attributes according to the input attribute names.
+
+
+
+
+================BNLJoin Class===================
+
+--------------getNextTuple()-------------------
+
+First we load block accroding to the input argument numRecords.
+For each block, we scan entire inner table record by record to find a match.
+If we find a match
+	concatenate two tables's matching record as an output
+	mark current position for next round
+	return the output data
+else
+	go to next record in the inner table.
+	if we have finished scanning the inner table
+		read next block of outer table
+
+if we have finished scanning both table, return QE_EOF.
+
+--------------getAttributes()------------------
+
+Concatenate two tables' attributes.
+
+
+
+
+================INLJoin Class===================
+
+--------------getNextTuple()-------------------
+
+First we read in a record data from input iterator and check whether it's join attribute is null.
+Use the outer record data to find a matching record in inner table using index.
+If find a match
+	concatenate two table's matching record as an output
+	mark current position in inner table for next round.
+	return the output data
+Else
+	read in next record data from outer table.
+	if we have finished scanning the outer and inner table
+		return QE_EOF.
+
+--------------getAttributes()------------------
+
+Concatenate two tables' attributes.
+
+
+
+
+================Aggregate Class===================
+
+---------------------Basic------------------------
+
+We store the aggregate value, namely count sum max min as reading through the entire table.
+For count, when we came accross a record, count plus one.
+For other aggregate value, we change the current value only when the record is not null.
+
+When call getNextTuple() method, we just return the stored statistics.
+
+---------------------Group------------------------
+
+We wrap up all the aggregate value as a structure:
+
+struct AggVal{
+    int count;
+    float sum;
+    float max;
+    int min;
+};
+
+For each distinct key, we store <key, AggVal> into a map.
+If the key is new, we insert a new pair into map.
+Else we update the statistics in the AggVal associated with the key.
+
+When call getNextTuple() method, we just return the <key, AggVal> in the map.

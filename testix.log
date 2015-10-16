@@ -1,0 +1,85 @@
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest1.o rbftest1.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+make[1]: Nothing to be done for `librbf.a'.
+make[1]: Leaving directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+g++   rbftest1.o librbf.a ../rbf/librbf.a   -o rbftest1
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest2.o rbftest2.cc
+g++   rbftest2.o librbf.a ../rbf/librbf.a   -o rbftest2
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest3.o rbftest3.cc
+g++   rbftest3.o librbf.a ../rbf/librbf.a   -o rbftest3
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest4.o rbftest4.cc
+g++   rbftest4.o librbf.a ../rbf/librbf.a   -o rbftest4
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest5.o rbftest5.cc
+g++   rbftest5.o librbf.a ../rbf/librbf.a   -o rbftest5
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest6.o rbftest6.cc
+g++   rbftest6.o librbf.a ../rbf/librbf.a   -o rbftest6
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest7.o rbftest7.cc
+g++   rbftest7.o librbf.a ../rbf/librbf.a   -o rbftest7
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8.o rbftest8.cc
+g++   rbftest8.o librbf.a ../rbf/librbf.a   -o rbftest8
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest8b.o rbftest8b.cc
+g++   rbftest8b.o librbf.a ../rbf/librbf.a   -o rbftest8b
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest9.o rbftest9.cc
+g++   rbftest9.o librbf.a ../rbf/librbf.a   -o rbftest9
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest10.o rbftest10.cc
+g++   rbftest10.o librbf.a ../rbf/librbf.a   -o rbftest10
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest11.o rbftest11.cc
+g++   rbftest11.o librbf.a ../rbf/librbf.a   -o rbftest11
+g++  -Wall -I.. -g -std=c++0x    -c -o rbftest12.o rbftest12.cc
+g++   rbftest12.o librbf.a ../rbf/librbf.a   -o rbftest12
+rm *.o *.a ixtest1 ixtest2 ixtest3 ixtest4a ixtest4b ixtest5a ixtest5b ixtest6a ixtest6b ixtest7 ixtest8 ixtest9 ixtest_extra_1 ixtest_extra_2 ixtest_extra_3 
+make -C ../rbf clean
+make[1]: Entering directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+rm rbftest1 rbftest2 rbftest3 rbftest4 rbftest5 rbftest6 rbftest7 rbftest8 rbftest8b rbftest9 rbftest10 rbftest11 rbftest12 rbftest1.o *.a *.o *~
+make[1]: Leaving directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o ix.o ix.cc
+ar rv libix.a ix.o
+a - ix.o
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest1.o ixtest1.cc
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest_util.o ixtest_util.cc
+make -C ../rbf librbf.a
+make[1]: Entering directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+g++  -Wall -I.. -g -std=c++0x    -c -o pfm.o pfm.cc
+ar rv librbf.a pfm.o
+a - pfm.o
+g++  -Wall -I.. -g -std=c++0x    -c -o rbfm.o rbfm.cc
+ar rv librbf.a rbfm.o
+a - rbfm.o
+make[1]: Leaving directory `/home/sidney/workspace/test222/project3/codebase/rbf'
+g++   ixtest1.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest1
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest2.o ixtest2.cc
+g++   ixtest2.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest2
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest3.o ixtest3.cc
+g++   ixtest3.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest3
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest4a.o ixtest4a.cc
+g++   ixtest4a.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest4a
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest4b.o ixtest4b.cc
+g++   ixtest4b.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest4b
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest5a.o ixtest5a.cc
+g++   ixtest5a.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest5a
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest5b.o ixtest5b.cc
+g++   ixtest5b.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest5b
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest6a.o ixtest6a.cc
+g++   ixtest6a.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest6a
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest6b.o ixtest6b.cc
+g++   ixtest6b.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest6b
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest7.o ixtest7.cc
+g++   ixtest7.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest7
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest8.o ixtest8.cc
+g++   ixtest8.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest8
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest9.o ixtest9.cc
+g++   ixtest9.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest9
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest_extra_1.o ixtest_extra_1.cc
+g++   ixtest_extra_1.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest_extra_1
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest_extra_2.o ixtest_extra_2.cc
+g++   ixtest_extra_2.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest_extra_2
+g++  -Wall -I.. -g -std=c++0x    -c -o ixtest_extra_3.o ixtest_extra_3.cc
+g++   ixtest_extra_3.o ixtest_util.o libix.a ../rbf/librbf.a   -o ixtest_extra_3

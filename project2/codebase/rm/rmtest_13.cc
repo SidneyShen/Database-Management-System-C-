@@ -64,6 +64,8 @@ RC TEST_RM_13(const string &tableName)
     rmsi.close();
     free(returnedData);
 
+    rc = rm->deleteTable("tbl_b_employee4");
+
     cout << "***** [PASS] Test Case 13 Passed *****" << endl << endl;
     
     return success;

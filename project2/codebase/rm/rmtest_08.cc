@@ -1,14 +1,14 @@
-#include "test_util.h"
-
-RC TEST_RM_8(const string &tableName, vector<RID> &rids, vector<int> &sizes)
-{
-    // Functions Tested for large tables:
-    // 1. getAttributes
-    // 2. insert tuple
-    cout << endl << "***** In RM Test Case 8 *****" << endl;
-
-    RID rid; 
-    void *tuple = malloc(1000);
+ #include "test_util.h"
+ 
+ RC TEST_RM_8(const string &tableName, vector<RID> &rids, vector<int> &sizes)
+ {
+     // Functions Tested for large tables:
+     // 1. getAttributes
+     // 2. insert tuple
+     cout << endl << "***** In RM Test Case 8 *****" << endl;
+ 
+    RID rid;
+    void *tuple = malloc(2000);
     int numTuples = 2000;
 
     // GetAttributes
@@ -18,7 +18,7 @@ RC TEST_RM_8(const string &tableName, vector<RID> &rids, vector<int> &sizes)
 
     int nullAttributesIndicatorActualSize = getActualByteForNullsIndicator(attrs.size());
     unsigned char *nullsIndicator = (unsigned char *) malloc(nullAttributesIndicatorActualSize);
-	memset(nullsIndicator, 0, nullAttributesIndicatorActualSize);
+    memset(nullsIndicator, 0, nullAttributesIndicatorActualSize);
 
 //    for(unsigned i = 0; i < attrs.size(); i++)
 //    {
@@ -29,15 +29,19 @@ RC TEST_RM_8(const string &tableName, vector<RID> &rids, vector<int> &sizes)
     for(int i = 0; i < numTuples; i++)
     {
         // Test insert Tuple
+        cout<<"Number of rounds = "<<i<<endl;
         int size = 0;
         memset(tuple, 0, 2000);
         prepareLargeTuple(attrs.size(), nullsIndicator, i, tuple, &size);
 
         rc = rm->insertTuple(tableName, tuple, rid);
         assert(rc == success && "RelationManager::insertTuple() should not fail.");
-
+        rc = rm->printTuple(attrs, tuple);
+        cout<<"test08 rid.pageNum = "<<rid.pageNum<<endl;
+        cout<<"test08 rid.slotNum = "<<rid.slotNum<<endl;
+        cout<<endl;
         rids.push_back(rid);
-        sizes.push_back(size);        
+        sizes.push_back(size);       
     }
     cout << "***** [PASS] Test Case 8 Passed *****" << endl << endl;
     free(tuple);
@@ -52,7 +56,7 @@ int main()
     vector<RID> rids;
     vector<int> sizes;
 
-	// Insert Tuple
+        // Insert Tuple
     RC rcmain = TEST_RM_8("tbl_employee4", rids, sizes);
 
     return rcmain;

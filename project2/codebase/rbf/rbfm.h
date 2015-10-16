@@ -178,7 +178,10 @@ public:
   int readAttributeHelper(char* recordData, int attrID, void* data);
   int getConditionAttr(const vector<Attribute> &recordDescriptor, const string &conditionAttribute, RBFM_ScanIterator &rbfm_ScanIterator);
   int getValue(const void* value, RBFM_ScanIterator &rbfm_ScanIterator);
-
+  int getOriginalDataAttrNum(char* recordData);
+  void readRecordWithAddedAttr(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data);
+  void readRecordWithDeletedAttr(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data);
+  void constructReturnRecord(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data);
 };
 
 #endif

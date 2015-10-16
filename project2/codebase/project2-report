@@ -1,0 +1,72 @@
+###############################################
+                  RBFM Level
+###############################################
+
+We change the slot information structure that is used to find a record on specific page:
+The SlotInfo struct contains three part:
+1. status; 2. record offset in this page; 3. record length in this page.
+If the record is normal(not deleted or migrated), the status is "1";
+If the record is deleted, the status is "1";
+If the record is migrated, the status is "2", and the second part is changed to contain new page num and third part is changed to contain new slot id.
+
+-----------------Insert a record---------------
+1.Find a page with enough free space;
+2.Check whether there is SlotInfo whose status is "0", if yes, reuse the SlotInfo Position.
+3. Insert the record and modify SlotInfo and RID and other information in this page.
+
+-----------------Read a record-----------------
+1.Read according to the RID.
+2.If status is "1", read out.
+3.If status is "2", use newPageNum and newSlotID to find the record iteratively.
+4.If status is "0", error.
+
+-----------------Delete a record-----------------
+1.Find the record (iteratively).
+2.Delete the record.
+3.Reorganize page.
+4.Change all the SlotInfo's status to "0" of all the pages along the route to find this record.
+
+-----------------Update a record-----------------
+1.Find the record (iteratively).
+2.Check whether the updated record could fit in the page?
+3.If the record could fit in this page, reorganize this page.
+4.Otherwise, migrate the record to a new page (similar procedure with insert a record). Modify the SlotInfo ("2",newPageNum, newSlotID)in the original page and reorganize the original page.
+
+
+-----------------Scan----------------------------
+The Scan() method mainly do the initialization for the getNextRecord() method.
+It store the information as RBFM_ScanIterator's local attributes:
+
+FileHandle &fileHandle,
+const vector<Attribute> &recordDescriptor,
+const string &conditionAttribute,
+const CompOp compOp,
+const void *value, 
+const vector<string> &attributeNames, 
+
+
+---------------getNextRecord-----------------------
+1. Seach from the current RID
+2. Check whether RID is valid:
+    a. If RID goes beyond the scope of current page, jump to the next page
+    b. If current record does not satisfy the comparison condition, go to next record.
+    c. If RID goes beyond the scope of the file, return RBFM_EOF
+3. If find the matching record, read the corresponding attribute according to the passing-in requirement.
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                Extra Credit
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+******************RBFM Level********************
+
+------------------Add Attribute-----------------
+We change the format of record when insert it into file:
+Add a header which contains information of the number of attribute that the record has.
+
+In the readRecord Method, we could get the number of attributes that rm level gives from recordDescriptor. We could compare the two numbers (one from recordDescriptor, one from the header information of stored record). If the size of recordDescriptor becomes larger, we know that, some attributes has been added through catalog. So, we could just modify the nulldescriptor information to show the extra attributes added (in this case, add "1" because no actual data was added).
+
+
+------------------Delete Attribute-----------------
+If user want to delete an attribute, we could modify the corresponding attribute's max length to be 0. 
+Same to the Add method, we could get the information from recordDescriptor. If an attribute's length <= 0, we treat this attribute as deleted attribute. When returning the result, we delete the corresponding bit in the nulldescriptor and corresponding actual data.

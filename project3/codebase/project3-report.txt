@@ -1,0 +1,111 @@
+###############################################
+                  IX Level
+###############################################
+
+
+
+Index Page Format:
+
+***************************************************
+*Pointer*Key1*Pointer*Key2*Pointer                *
+*                                                 *
+*                                                 *
+*                                                 *
+*                                                 *
+*                                                 *
+*                                                 *
+*                                                 *
+*                *NumOfKeys*FreeSpaceOffset*IsLeaf*
+***************************************************
+
+Leaf Page Format:
+
+*******************************************************
+*Key1*NumOfRid*Rid1*Rid2*Key2*NumOfRid*Rid1*Rid2*Rid3 *
+*Key3*NumOfRid*Rid1*                                  *
+*                                                     *
+*                                                     *
+*                                                     *
+*                                                     *
+*                                                     *
+*                                 *LeftNeighborPageNum*
+*RightNeighborPageNum*NumOfKeys*FreeSpaceOffset*IsLeaf*
+*******************************************************
+
+
+
+-----------------insertEntry----------------------------
+a. If no page now, initialize a new leaf page.
+b. Else if keys count of the first page (Page No. 0) is 0, initialize a new leaf page.
+c. Else, search a page for insert using searchForInsert method. Then, insert the key and rid into the correspoding node (page).
+
+In searchForInsert method:
+This method can find a path from root to the leaf node for insertion. 
+If the index node in the path or the leaf node we find do not have enough space for insertion, we should split it first using the split method.
+Then, we will use searchForInsert method again to search from the root.
+
+In split method:
+1. Copy first half to a new page. 
+2. Do the push up or copy up
+	a. if the node is index node, push the middle key up to the father node.
+	b. if the node is leaf node, copy the middle key up to its father node.
+3. Copy the second half, 
+	a. if the original node is root, append a new page, and write the second half to it.
+	b. if the original node is not root, write the second falf to the original page.
+
+Also have two methods to write a key RID pair to a specified leaf or write a key pageNum pair to a specified index.
+
+
+-----------------deleteEntry----------------------------
+1. Search to find the corresponding leaf page. (Using search method)
+2. Delete the RID in the page using the method deleteRID.
+3. If delete the last key in that node, call the searchAndChange method beginning from the root.
+
+In deleteRID method:
+find the position of the corresponding key and RID.
+1. If do not find, return -1;
+2. If find, delete
+	If the RID is the last RID of the key, delete the key.
+		If the key is the last key of the node, delete the node (page)
+
+In searchAndChange method:
+This is a recursion function.
+1. If the current node is leaf and it has keys, return
+2. If the current node is leaf and its keys cont is 0, 
+	1. If its father page is root and its father page has only one key, find the other child of the root, and make it a new root, return.
+	2. If its father page is root and has more than one key, go to father page, find and delete the key with the corresponding pointer, return.
+	3. If father page is not root, go to father page, search and delete the key with the corresponding pointer using the method searchAndDeleteKey, then, do searchAndChange from the root.
+3. If the current node is index and it has at least one key, search the key in the node the index node points to.
+4. If the current node is index and it dose not have any key, fetch the only one page number in this page, go to the father page, write to corrsponding position, do searchAndChange from the root.
+
+
+-----------------printBtree-----------------------------
+Since we need to print the tree in the "pre-order" fasion, we use pre-order tree traversal method to print this tree. To be more specific, we need to print out the key of current node before go to the child of current node recursively.
+
+
+-----------------Scan-----------------------------------
+The Scan() method mainly do the initialization for the getNextEntry() method.
+It store the information as IX_ScanIterator's local attributes:
+
+	IXFileHandle ixfileHandle;
+	Attribute attribute;
+	void * lowKey,* highKey;
+	bool lowKeyInclusive,highKeyInclusive;
+	void * nextPageData;
+	int nextPageNum;
+	void * nextKey;
+	int nextKeyNum;
+	int nextRIDNumOfNextKey;
+
+For initialization job: we find the correct leaf node that should start to search for.
+If lowKey == NULL, we use go to the leftmost leaf node.
+If lowKey != NULL, we use the lowKey to find the start leaf node.
+
+---------------getNextEntry----------------------------
+1. Seach from the current RID
+2. Check whether RID is valid:
+	a. If the current key does not in the range of lowkey and highkey, goto next key.
+    	b. If RID goes beyond the scope of current ridlist, goto next key in this page.
+    	c. If next key goes beyond the scope of the current page, goto right neighbor leaf node.
+    	d. If right neighbor leaf node does not exist, return RBFM_EOF
+3. If find the matching entry, pass out the corresponding key and rid information according.

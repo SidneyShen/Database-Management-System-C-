@@ -1,0 +1,1073 @@
+
+#include "rm.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <iostream>
+#include <queue>
+#include <string>
+
+using namespace std;
+RelationManager* RelationManager::_rm = 0;
+
+RelationManager* RelationManager::instance()
+{
+    if(!_rm)
+        _rm = new RelationManager();
+
+    return _rm;
+}
+
+RelationManager::RelationManager()
+{
+	rbfm = RecordBasedFileManager::instance();
+
+	ixm = IndexManager::instance();
+
+	FileHandle fileHandle;
+	Attribute table_id = {"table-id", TypeInt, 4};
+	Attribute table_name = {"table-name", TypeVarChar, 50};
+	Attribute file_name = {"file-name", TypeVarChar, 50};
+	tablesDescriptor.push_back(table_id);
+	tablesDescriptor.push_back(table_name);
+	tablesDescriptor.push_back(file_name);
+	Attribute column_name = {"column-name", TypeVarChar, 50};
+	Attribute column_type = {"column-type", TypeInt, 4};
+	Attribute column_length = {"column-length", TypeInt, 4};
+	Attribute column_position = {"column-position", TypeInt, 4};
+	columnsDescriptor.push_back(table_id);
+	columnsDescriptor.push_back(column_name);
+	columnsDescriptor.push_back(column_type);
+	columnsDescriptor.push_back(column_length);
+	columnsDescriptor.push_back(column_position);
+	Attribute ixfileName = {"ixfileName", TypeVarChar, 50};
+	ixTablesDescriptor.push_back(ixfileName);
+	if(rbfm ->openFile("Tables", fileHandle) == 0){
+		MAX_TableID = loadTableID(fileHandle);
+		rbfm ->closeFile(fileHandle);
+	}
+	else{
+		MAX_TableID = 0;
+		createCatalog();
+	}
+}
+
+
+
+RelationManager::~RelationManager()
+{
+	_rm = NULL;
+}
+
+void readOneAttributeByID(void* recordData, int attrID, void* tempAttrData, vector<Attribute> attrs){
+	int nullDescriptorLenInByte = (int)(ceil)(attrs.size()/8.0);
+	// int pos_byte = (attrID-1)/8;
+	// int pos_bit = (attrID-1)%8;
+
+	char *curData = (char*) recordData;
+	char *nullDescriptor = (char*) recordData;
+
+	curData += nullDescriptorLenInByte;
+
+	for(int i=0; i<(int)attrs.size(); i++){
+		int pos = i/8;
+        int j = i%8;
+        Attribute attribute = attrs[i];
+
+		if(i == attrID){
+			if(*(nullDescriptor+pos) & (1<<(7-j))){ // The corresponding bit is not "0", means NULL
+				*(char*)tempAttrData = 0x80;
+			}
+			else{
+				*(char*)tempAttrData = 0x00;
+				int len = 0;
+				if(attribute.type == TypeVarChar){
+					len += *(int*)curData;
+				}
+				len += sizeof(int);
+				memcpy((char*)tempAttrData + sizeof(char), curData, len);
+				// printAttribute(attribute, tempAttrData);
+			}
+			break;
+		}
+		else{	// have not reached attID
+			if(*(nullDescriptor+pos) & (1<<(7-j))){
+				continue;
+			}
+			else{
+				if(attribute.type == TypeVarChar){
+					int varCharLength = *(int*)curData;
+					curData += varCharLength;
+				}
+				curData += sizeof(int);
+			}
+		}
+
+	}
+
+}
+
+
+bool isAttrNull(void* attrData){
+	if((*(char*)attrData ^ 0x80) == 0)
+		return true;
+	else
+		return false;
+}
+
+void removeNullDescriptor(void* before, void* after, AttrType type){
+	int len = sizeof(int);
+	if(type == TypeVarChar)
+		len += *(int*)((char*)before + sizeof(char));
+	memcpy((char*)after,(char*)before+sizeof(char), len);
+	return;
+}
+
+int RelationManager::loadTableID(FileHandle &fileHandle){
+	int temp, maxID = 0;
+	vector<string> attrNames;
+	attrNames.push_back("table-id");
+	RBFM_ScanIterator scanIterator;
+	rbfm ->scan(fileHandle, tablesDescriptor, "", NO_OP, NULL, attrNames, scanIterator);
+	RID rid;
+	void *data = malloc(1 + sizeof(int));
+	memset(data, 0, 1 + sizeof(int));
+	while(scanIterator.getNextRecord(rid, data) != RBFM_EOF){
+		memcpy(&temp, (char *)data + 1, sizeof(int));
+		if(temp > maxID)
+			maxID = temp;
+		memset(data, 0, 1 + sizeof(int));
+	}
+	free(data);
+	scanIterator.close();
+	return maxID;
+}
+
+int RelationManager::calcLength(const vector<Attribute> &descriptor){
+	int size = descriptor.size();
+	int nullBytes = (int)ceil(size/8.0);
+	int length = 0;
+	length += nullBytes;
+	for(int i = 0; i < size; i ++){
+		Attribute attr = descriptor[i];
+		length += attr.length;
+		if(attr.type == TypeVarChar){
+			length += 4;
+		}
+	}
+	return length;
+}
+
+queue<unsigned char> RelationManager::initialNullDescriptor(const vector<Attribute> &descriptor){
+	queue<unsigned char> res;
+	int size = descriptor.size();
+	int nullBytes = (int)ceil(size/8.0);
+	for(int i = 0; i < nullBytes; i ++){
+		res.push(0x00);
+	}
+	return res;
+}
+
+
+
+RC RelationManager::createCatalog()
+{
+	if(initialTablesTable() == -1)
+		return -1;
+	if(initialColumnsTable() == -1)
+		return -1;
+    return 0;
+}
+
+
+
+RC RelationManager::initialTablesTable()
+{
+	if(rbfm ->createFile("Tables") == -1)
+		return -1;
+	addTablesColumn("Tables");
+	addTablesColumn("Columns");
+	return 0;
+}
+
+RC RelationManager::addTablesColumn(const string &tableName){
+	FileHandle fileHandle;
+	RID rid;
+	string fileName = tableName;
+	MAX_TableID ++;
+	rbfm ->openFile("Tables", fileHandle);
+	int length = calcLength(tablesDescriptor);
+	void *buffer = malloc(length);
+	memset(buffer, 0, length);
+	int offset = 0;
+	queue<unsigned char> nullDescriptor = initialNullDescriptor(tablesDescriptor);
+
+	while(!nullDescriptor.empty()){
+		unsigned char temp = nullDescriptor.front();
+		memcpy((char *)buffer + offset, &temp, 1);
+		offset ++;
+		nullDescriptor.pop();
+	}
+
+	memcpy((char *)buffer + offset, & MAX_TableID, sizeof(int));
+	offset += sizeof(int);
+	int tableNameSize = (int)tableName.size();
+	memcpy((char *)buffer + offset, &tableNameSize, sizeof(int));
+	offset +=sizeof(int);
+	memcpy((char *)buffer + offset, tableName.c_str(), tableName.size());
+	offset +=tableName.size();
+	int fileNameSize = (int)fileName.size();
+	memcpy((char *)buffer + offset, &fileNameSize, sizeof(int));
+	offset +=sizeof(int);
+	memcpy((char *)buffer + offset, fileName.c_str(), fileName.size());
+	offset += fileName.size();
+	int attrsSize = (int)tablesDescriptor.size();
+	memcpy((char *)buffer + offset, &attrsSize, sizeof(int));
+	offset +=sizeof(int);
+	void *data = malloc(offset);
+	memset(data, 0, offset);
+	memcpy((char *)data, (char *)buffer, offset);
+	free(buffer);
+	rbfm ->insertRecord(fileHandle, tablesDescriptor, data, rid);
+	rbfm ->closeFile(fileHandle);
+	free(data);
+
+	return 0;
+}
+
+RC RelationManager::initialColumnsTable(){
+	if(rbfm ->createFile("Columns") == -1)
+		return -1;
+	addColumnsColumn("Tables", tablesDescriptor);
+	addColumnsColumn("Columns", columnsDescriptor);
+
+	return 0;
+
+}
+
+RC RelationManager::addColumnsColumn(const string &tableName, const vector<Attribute> &attrs){
+	// cout<<"In RelationManager::addColumnsColumn"<<endl;
+	// cout<<"tableName = "<<tableName<<endl;
+	FileHandle fileHandle;
+	RID rid;
+	int tableID;
+	if(tableName == "Tables")
+		tableID = 1;
+	else if(tableName == "Columns")
+		tableID = 2;
+	else
+		tableID = MAX_TableID;
+	string fileName = tableName;
+	rbfm ->openFile("Columns", fileHandle);
+	int length = calcLength(columnsDescriptor);
+	// cout<<"length = "<<length<<endl;
+	void *buffer = malloc(length);
+	memset(buffer, 0, length);
+	int offset = 0;
+	queue<unsigned char> nullDescriptor = initialNullDescriptor(columnsDescriptor);
+	// cout<<"attrs.size() = "<<attrs.size()<<endl;
+	for (int i = 0; i < (int)attrs.size(); i++) {
+		Attribute attr = attrs[i];
+		offset = 0;
+		int size = nullDescriptor.size();
+		for(int j = 0; j < size; j ++){
+			unsigned char temp = nullDescriptor.front();
+			memcpy((char *)buffer + offset, &temp, 1);
+			offset ++;
+			// cout<<"offset = "<<offset<<endl;
+			nullDescriptor.pop();
+			nullDescriptor.push(temp);
+		}
+		memcpy((char *)buffer + offset, &tableID, sizeof(int));
+		offset += sizeof(int);
+		int attrNameSize = (int)attr.name.size();
+		memcpy((char *)buffer + offset, &attrNameSize, sizeof(int));
+		offset += sizeof(int);
+		memcpy((char *)buffer + offset, attr.name.c_str(), attr.name.size());
+		offset += attr.name.size();
+		int typ = (int)attr.type;
+		memcpy((char *)buffer + offset, &typ, sizeof(int));
+		offset += sizeof(int);
+		int len = (int)attr.length;
+		memcpy((char *)buffer + offset, &len, sizeof(int));
+		offset += sizeof(int);
+		int pos = i + 1;
+		// cout<<"before memcpy position!"<<endl;
+		memcpy((char *)buffer + offset, &pos, sizeof(int));
+		offset += sizeof(int);
+		// cout<<"offset = "<<offset<<endl;
+		void *data = malloc(offset);
+		memset(data, 0, offset);
+		memcpy((char *)data, (char *)buffer, offset);
+		// cout<<"column position = "<<*(int*)((char*)data+offset-sizeof(int))<<endl;
+		rbfm ->insertRecord(fileHandle, columnsDescriptor, data, rid);
+
+		free(data);
+    }
+    free(buffer);
+    rbfm ->closeFile(fileHandle);
+
+    return 0;
+}
+
+RC RelationManager::deleteCatalog()
+{
+	FileHandle fileHandle;
+	if(rbfm ->openFile("Tables", fileHandle) == -1)
+		return -1;
+	rbfm ->closeFile(fileHandle);
+	rbfm ->destroyFile("Tables");
+	if(rbfm ->openFile("Columns", fileHandle) == -1)
+		return -1;
+	rbfm ->closeFile(fileHandle);
+	rbfm ->destroyFile("Columns");
+	MAX_TableID = 0;
+    return 0;
+}
+
+RC RelationManager::createTable(const string &tableName, const vector<Attribute> &attrs)
+{
+    if(tableName == "Tables" || tableName == "Columns") {
+        return -1;
+    }
+    string fileName = tableName;
+	if(rbfm ->createFile(fileName) == -1)
+		return -1;
+	addTablesColumn(tableName);
+	addColumnsColumn(tableName, attrs);
+	return 0;
+}
+
+RC RelationManager::insertToIXTables(string value){
+	FileHandle fileHandle;
+	if(rbfm ->openFile("IXTables", fileHandle) == -1)
+		return -1;
+	RID rid;
+	int length = value.length();
+	void *data = malloc(1 + sizeof(int) + length);
+	memset(data, 0, 1 + sizeof(int) + length);
+	unsigned char nullDescriptor = 0x00;
+	memcpy((char *) data, &nullDescriptor, 1);
+	memcpy((char *) data + 1, &length, sizeof(int));
+	memcpy((char *) data + 1 + sizeof(int), (char *) value.c_str(), length);
+	rbfm ->insertRecord(fileHandle, ixTablesDescriptor, data, rid);
+	rbfm ->closeFile(fileHandle);
+	free(data);
+	return 0;
+}
+
+RC RelationManager::createIndex(const string &tableName, const string &attributeName){
+	FileHandle fileHandle;
+	if(rbfm ->openFile("IXTables", fileHandle) == -1){
+		rbfm ->createFile("IXTables");
+	}
+	else{
+		rbfm ->closeFile(fileHandle);
+	}
+
+    string fileName = tableName + "_" + attributeName + "_index";
+    if (ixm->createFile(fileName) != 0) {
+        return -1;
+    }
+
+    insertToIXTables(fileName);
+
+
+
+    IXFileHandle ixFileHandle;
+    rbfm->openFile(tableName, fileHandle);
+    ixm->openFile(fileName, ixFileHandle);
+
+    vector<string> attr;
+    attr.push_back(attributeName);
+    vector<Attribute> attrs;
+    getAttributes(tableName, attrs);
+    RBFM_ScanIterator rmsi;
+    rbfm->scan(fileHandle, attrs, "", NO_OP, NULL, attr, rmsi);
+    RID rid;
+    void *data = malloc(PAGE_SIZE);
+    memset(data, 0, PAGE_SIZE);
+    int pos = 0;
+    int size = attrs.size();
+    for (int i = 0; i < size; i++) {
+        if (attrs[i].name == attributeName) {
+            pos = i;
+            break;
+        }
+    }
+    //cout<<pos<<endl;
+    while (rmsi.getNextRecord(rid, data) != RBFM_EOF) {
+    	//printTuple(attrs, data);
+
+		if(!isAttrNull(data)){
+			//memset(data, 0, PAGE_SIZE);
+			void *key = malloc(PAGE_SIZE);
+			memset(key, 0, PAGE_SIZE);
+			removeNullDescriptor(data, key, attrs[pos].type);
+			/**
+			int a;
+			memcpy(&a, data, sizeof(int));
+			cout<<a<<endl;
+			*/
+			ixm->insertEntry(ixFileHandle, attrs[pos], key, rid);
+			free(key);
+		}
+        //memset(data, 0, PAGE_SIZE);
+    }
+
+    /*
+    ixm->printBtree(ixFileHandle, attrs[pos]);
+    ixm->closeFile(ixFileHandle);
+    fileName = tableName + "_B_index";
+    ixm->openFile(fileName, ixFileHandle);
+    //ixm->printBtree(ixFileHandle, attrs[0]);//qetest02
+    ixm->printBtree(ixFileHandle, attrs[1]);//qetest01
+    */
+
+    rmsi.close();
+    ixm->closeFile(ixFileHandle);
+    rbfm->closeFile(fileHandle);
+    free(data);
+    return 0;
+}
+
+
+RC RelationManager::destroyIndex(const string &tableName, const string &attributeName){
+    string fileName = tableName + "_" + attributeName + "_index";
+    RC res = ixm->destroyFile(fileName);
+    FileHandle fileHandle;
+    if(rbfm ->openFile("IXTables", fileHandle) == -1){
+    	return -1;
+    }
+    else{
+    	RBFM_ScanIterator scanIterator;
+    	vector<string> attrNames;
+    	attrNames.push_back("ixfileName");
+		RID rid;
+		int fileNameLen = fileName.length();
+		void *value = malloc(sizeof(int) + fileNameLen);
+		memset(value, 0, sizeof(int) + fileNameLen);
+		memcpy((char *)value, &fileNameLen, sizeof(int));
+		memcpy((char *)value + sizeof(int), (char *)fileName.c_str(), fileNameLen);
+    	rbfm -> scan(fileHandle, ixTablesDescriptor, "ixfileName", EQ_OP, value, attrNames, scanIterator);
+
+    	/*
+    	void *temp = malloc(fileNameLen + 1);
+    	memset(temp, 0, fileNameLen + 1);
+    	memcpy((char *)temp, (char *)value + sizeof(int), fileNameLen);
+    	char endChar = '\0';
+    	memcpy((char *)temp + fileNameLen, &endChar, 1);
+    	string tmpStr((char *)temp);
+    	cout<<"tmpStr "<<tmpStr<<endl;
+    	free(temp);
+    	*/
+
+    	void *data = malloc(1 + sizeof(int) + 50);
+		memset(data, 0, 1 + sizeof(int) + 50);
+		while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+			if(rbfm ->deleteRecord(fileHandle, ixTablesDescriptor, rid) == -1)
+				return -1;
+		}
+		free(data);
+		free(value);
+		scanIterator.close();
+		rbfm ->closeFile(fileHandle);
+    }
+    return res;
+}
+
+RC RelationManager::deleteTable(const string &tableName)
+{
+	if(tableName == "Tables" || tableName == "Columns") {
+        return -1;
+    }
+	string fileName = tableName;
+	FileHandle fileHandle;
+	if(rbfm ->openFile(fileName, fileHandle) == -1)
+		return -1;
+	rbfm -> closeFile(fileHandle);
+	if(rbfm ->destroyFile(fileName) == -1)
+		return -1;
+
+	RBFM_ScanIterator scanIterator;
+	vector<string> attrNames;
+	attrNames.push_back("column-name");
+	RID rid;
+	int tableID = getTableID(tableName);
+
+	rbfm -> openFile("Columns", fileHandle);
+	rbfm -> scan(fileHandle, columnsDescriptor, "table-id", EQ_OP, &tableID, attrNames, scanIterator);
+	void *data = malloc(1 + sizeof(int) + 50);
+	memset(data, 0, 1 + sizeof(int) + 50);
+	while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+		rbfm ->deleteRecord(fileHandle, columnsDescriptor, rid);
+		int length;
+		memcpy(&length, (char *)data + 1, sizeof(int));
+		cout<<"length "<<length<<endl;
+		void *temp = malloc(length + 1);
+		memset(temp, 0, length + 1);
+		memcpy((char *)temp, (char *)data + 1 + sizeof(int), length);
+		char endChar = '\0';
+		memcpy((char *)temp + length, &endChar, 1);
+		string columnName((char *)temp);
+		cout<<"columnName "<<columnName<<endl;
+		destroyIndex(tableName, columnName);
+		free(temp);
+	}
+
+	free(data);
+	scanIterator.close();
+	rbfm ->closeFile(fileHandle);
+
+	rbfm -> openFile("Tables", fileHandle);
+	rbfm -> scan(fileHandle, tablesDescriptor, "table-id", EQ_OP, &tableID, attrNames, scanIterator);
+	data = malloc(calcLength(tablesDescriptor));
+	while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+		rbfm ->deleteRecord(fileHandle, tablesDescriptor, rid);
+	}
+	free(data);
+	scanIterator.close();
+	rbfm ->closeFile(fileHandle);
+
+    return 0;
+}
+
+RC RelationManager::getAttributes(const string &tableName, vector<Attribute> &attrs)
+{
+	vector <string> attrNames;
+	FileHandle fileHandle;
+	int tableID = getTableID(tableName);
+	RID rid;
+	RBFM_ScanIterator scanIterator;
+
+	attrNames.push_back("column-name");
+	attrNames.push_back("column-type");
+	attrNames.push_back("column-length");
+	Attribute attr;
+	// cout<<"In RelationManager::getAttributes, Before rbfm ->openFile(Columns, fileHandle)"<<endl;
+	rbfm ->openFile("Columns", fileHandle);
+	rbfm ->scan(fileHandle, columnsDescriptor, "table-id", EQ_OP, &tableID, attrNames, scanIterator);
+	// cout<<"In RelationManager::getAttributes, Scan Columns Done!"<<endl;
+	void *data = malloc(1 + sizeof(int) + 50 + 2 * sizeof(int));	//"1" for nulldescriptor, "sizeof(int) + 50" for column-name varchar, two "sizeof(int)" for type and length int.
+	memset(data, 0, 1 + sizeof(int) + 50 + 2 * sizeof(int));
+	// cout<<"In Get Attribute::: Before getNextRecord()!!!!!"<<endl;
+	// cout<<endl;
+	while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+		unsigned char flag = 0;
+		memcpy(&flag, (char *)data, 1);
+		// cout<<"flag = "<<*(char*)data<<endl;
+		if((flag & 0x80) == 0x80 || (flag & 0x40) == 0x40  )
+			return -1;
+		int nameLength = 0;
+		memcpy(&nameLength, (char *) data + 1, sizeof(int));
+
+		// cout<<endl;
+		// cout<<"---------------------------------------"<<endl;
+		// cout<<"column-name length = "<<nameLength<<endl;
+		char *attrName = new char[nameLength+1];
+		attrName[nameLength] = '\0';
+		memcpy(attrName, (char *) data + 1 + sizeof(int), nameLength);
+		attr.name = string(attrName);
+		//cout<<"column-name = "<<attr.name<<endl;
+
+		memcpy(&attr.type, (char *) data + 1 + sizeof(int) + nameLength, sizeof(int));
+		memcpy(&attr.length, (char *) data + 1 + sizeof(int) + nameLength + sizeof(int), sizeof(int));
+		attrs.push_back(attr);
+		delete[] attrName;
+		// cout<<"--------0, ----------------------------------"<<endl;
+		memset(data, 0, 1 + sizeof(int) + 50 + 2 * sizeof(int));
+	}
+	// cout<<"###################################################"<<endl;
+	// cout<<"Vector attr content : "<<endl;
+	// for(int i=0; i<(int)attrs.size(); i++){
+		// cout<<"attribute name = "<<attrs[i].name<<endl;
+	// }
+	// cout<<"###################################################"<<endl;
+	rbfm ->closeFile(fileHandle);
+	scanIterator.close();
+	free(data);
+	return 0;
+}
+
+
+RC RelationManager::insertTuple(const string &tableName, const void *data, RID &rid)
+{	
+	// cout<<"In RelationManager::insertTuple: "<<endl;
+	if(tableName == "Tables" || tableName == "Columns"){
+		return -1;
+	}
+	string fileName = tableName;
+	FileHandle fileHandle;
+	vector<Attribute> attrs;
+	// cout<<"Before getAttribute()"<<endl;
+	getAttributes(tableName, attrs);
+	// cout<<"After getAttritute()"<<endl;
+	// cout<<"attribute size = "<<attrs.size()<<endl;
+	if(rbfm ->openFile(fileName, fileHandle) == -1)
+		return -1;
+	RC res = rbfm ->insertRecord(fileHandle, attrs, data, rid);
+	rbfm ->closeFile(fileHandle);
+	if(res == -1)
+		return -1;
+
+	IXFileHandle ixfileHandle;
+	int size = attrs.size();
+
+	for (int i = 0; i < size; i++) {
+		string ixfileName = tableName + "_" + attrs[i].name + "_index";
+		if (ixm->openFile(ixfileName, ixfileHandle) != 0){
+			//cout<<"openfile "<<attrs[i].name<<" failed"<<endl;
+			continue;
+		}
+		void *key = malloc(PAGE_SIZE);
+		memset(key, 0, PAGE_SIZE);
+		void *temp = malloc(PAGE_SIZE);
+		memset(temp, 0, PAGE_SIZE);
+		memcpy((char *)temp, (char *)data, PAGE_SIZE);
+		readOneAttributeByID(temp, i, key, attrs);
+		//cout<<"before null"<<endl;
+		if(!isAttrNull(key)){
+			//memset(temp, 0, PAGE_SIZE);
+			removeNullDescriptor(key, temp, attrs[i].type);
+			//int a;
+			//memcpy(&a, temp, sizeof(int));
+			//cout<<a<<endl;
+			ixm->insertEntry(ixfileHandle, attrs[i], temp, rid);
+		}
+		ixm->closeFile(ixfileHandle);
+		free(temp);
+		free(key);
+	}
+    return 0;
+}
+
+RC RelationManager::deleteTuple(const string &tableName, const RID &rid)
+{
+	if(tableName == "Tables" || tableName == "Columns"){
+		return -1;
+	}
+    string fileName = tableName;
+    FileHandle fileHandle;
+    vector<Attribute> attrs;
+    getAttributes(tableName, attrs);
+    if(rbfm ->openFile(fileName, fileHandle) == -1)
+    	return -1;
+    void *data = malloc(PAGE_SIZE);
+    memset(data, 0, PAGE_SIZE);
+    rbfm->readRecord(fileHandle, attrs, rid, data);
+    RC res = rbfm ->deleteRecord(fileHandle, attrs, rid);
+    rbfm ->closeFile(fileHandle);
+    if (res == -1) {
+    	free(data);
+        return -1;
+    }
+
+    IXFileHandle ixfileHandle;
+	int size = attrs.size();
+	for (int i = 0; i < size; i++) {
+		string ixfileName = tableName + "_" + attrs[i].name + "_index";
+		if (ixm->openFile(ixfileName, ixfileHandle) != 0) {
+			continue;
+		}
+		void *key = malloc(PAGE_SIZE);
+		memset(key, 0, PAGE_SIZE);
+		void *temp = malloc(PAGE_SIZE);
+		memset(temp, 0, PAGE_SIZE);
+		memcpy((char *)temp, (char *)data, PAGE_SIZE);
+		readOneAttributeByID(temp, i, key, attrs);
+		if(!isAttrNull(key)){
+			memset(temp, 0, PAGE_SIZE);
+			removeNullDescriptor(key, temp, attrs[i].type);
+			res = ixm->deleteEntry(ixfileHandle, attrs[i], temp, rid);
+		}
+		ixm->closeFile(ixfileHandle);
+		free(temp);
+		free(key);
+		if(res != 0){
+			free(data);
+			return -1;
+		}
+	}
+	free(data);
+    return 0;
+}
+
+RC RelationManager::updateTuple(const string &tableName, const void *data, const RID &rid)
+{
+	if(tableName == "Tables" || tableName == "Columns"){
+		return -1;
+	}
+    string fileName = tableName;
+    FileHandle fileHandle;
+    vector<Attribute> attrs;
+    getAttributes(tableName, attrs);
+    if(rbfm ->openFile(fileName, fileHandle) == -1)
+    	return -1;
+    void *oldData = malloc(PAGE_SIZE);
+    memset(oldData, 0, PAGE_SIZE);
+    RC res = rbfm ->readRecord(fileHandle, attrs, rid, oldData);
+    res += rbfm ->updateRecord(fileHandle, attrs, data, rid);
+    rbfm ->closeFile(fileHandle);
+    if (res != 0) {
+        return -1;
+    }
+
+    IXFileHandle ixfileHandle;
+    int size = attrs.size();
+    for (int i =0 ; i < size; i++) {
+        string indexFileName = tableName + "_" + attrs[i].name + "_index";
+        if (ixm->openFile(indexFileName, ixfileHandle) != 0){
+        	continue;
+        }
+		void *newKey = malloc(PAGE_SIZE);
+		memset(newKey, 0, PAGE_SIZE);
+		void *oldKey = malloc(PAGE_SIZE);
+		memset(oldKey, 0, PAGE_SIZE);
+		//getKey(data, attrs[i], newKey, newOffset);
+		//getKey(oldData, attrs[i], oldKey, oldOffset);
+
+		void *temp1 = malloc(PAGE_SIZE);
+		memset(temp1, 0, PAGE_SIZE);
+		void *temp2 = malloc(PAGE_SIZE);
+		memset(temp2, 0, PAGE_SIZE);
+
+		memcpy((char *)temp1, (char *)data, PAGE_SIZE);
+		readOneAttributeByID(temp1, i, newKey, attrs);
+		memcpy((char *)temp2, (char *)oldData, PAGE_SIZE);
+		readOneAttributeByID(temp2, i, oldKey, attrs);
+
+		if(isAttrNull(newKey)){ //new key is null
+			if(!isAttrNull(oldKey)){//old key is not null, delete old key
+				memset(temp1, 0, PAGE_SIZE);
+				removeNullDescriptor(oldKey, temp1, attrs[i].type);
+				res = ixm->deleteEntry(ixfileHandle, attrs[i], temp1, rid);
+			}
+		}
+
+		else if(isAttrNull(oldKey)){ //new key is not null, old key is null, insert new key
+			memset(temp1, 0, PAGE_SIZE);
+			removeNullDescriptor(newKey, temp1, attrs[i].type);
+			ixm->insertEntry(ixfileHandle, attrs[i], temp1, rid);
+		}
+
+		else{//both them are not null, delete old key, insert new key
+			memset(temp1, 0, PAGE_SIZE);
+			removeNullDescriptor(newKey, temp1, attrs[i].type);
+			memset(temp2, 0, PAGE_SIZE);
+			removeNullDescriptor(oldKey, temp2, attrs[i].type);
+			res = ixm->deleteEntry(ixfileHandle, attrs[i], temp2, rid);
+			ixm->insertEntry(ixfileHandle, attrs[i], temp1, rid);
+		}
+
+		ixm->closeFile(ixfileHandle);
+		free(newKey);
+		free(oldKey);
+		free(temp1);
+		free(temp2);
+		if(res != 0){
+			free(oldData);
+			return -1;
+		}
+    }
+    free(oldData);
+    return 0;
+}
+
+RC RelationManager::readTuple(const string &tableName, const RID &rid, void *data)
+{
+	string fileName = tableName;
+	FileHandle fileHandle;
+	vector<Attribute> attrs;
+	if(rbfm ->openFile(fileName, fileHandle) == -1)
+		return -1;
+	getAttributes(tableName, attrs);
+	// cout<<endl;
+	// cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	// cout<<"Before RBFM readRecord:"<<endl;
+	RC res = rbfm ->readRecord(fileHandle, attrs, rid, data);
+	// cout<<"After RBFM readRecord:"<<endl;
+	// cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	rbfm ->closeFile(fileHandle);
+	// cout<<"readRecord result = "<<res<<endl;
+	// cout<<endl;
+	if(res == -1)
+		return -1;
+	return 0;
+}
+
+RC RelationManager::printTuple(const vector<Attribute> &attrs, const void *data)
+{
+	rbfm ->printRecord(attrs, data);
+	return 0;
+}
+
+RC RelationManager::readAttribute(const string &tableName, const RID &rid, const string &attributeName, void *data)
+{
+	string fileName = tableName;
+	FileHandle fileHandle;
+	vector<Attribute> attrs;
+    if(rbfm ->openFile(fileName, fileHandle) == -1)
+    	return -1;
+    getAttributes(tableName, attrs);
+    RC res = rbfm ->readAttribute(fileHandle, attrs, rid, attributeName, data);
+    rbfm ->closeFile(fileHandle);
+    if(res == -1)
+    	return -1;
+    return 0;
+}
+
+RC RelationManager::scan(const string &tableName,
+      const string &conditionAttribute,
+      const CompOp compOp,
+      const void *value,
+      const vector<string> &attributeNames,
+      RM_ScanIterator &rm_ScanIterator){
+	// cout<<"In RelationManager::scan------------------"<<endl<<endl;
+    FileHandle fileHandle;
+    vector<Attribute> attrs;
+    // cout<<"tableName = "<<tableName<<endl;
+    // cout<<"conditionAttribute = "<<conditionAttribute<<endl;
+    if(rbfm ->openFile(tableName,fileHandle) == -1)
+    	return -1;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<fileHandle.getNumberOfPages()<<endl;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<endl;
+    // cout<<"In RelationManager::scan, After OpenFile, Before getAttributes()."<<endl;
+    // cout<<endl;
+    getAttributes(tableName,attrs);
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<fileHandle.getNumberOfPages()<<endl;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+	// cout<<"###################################################"<<endl;
+	// cout<<"Vector attr content : "<<endl;
+	// for(int i=0; i<(int)attrs.size(); i++){
+		// cout<<"attribute name = "<<attrs[i].name<<endl;
+	// }
+	// cout<<"###################################################"<<endl;
+
+    // cout<<"conditionAttribute = "<<conditionAttribute<<endl;
+    // cout<<"Go to fetch all satisfied record with specific attribute : "<<endl;
+    // cout<<endl;
+
+    rm_ScanIterator.scan(fileHandle, attrs, conditionAttribute, compOp, value, attributeNames);
+    return 0;
+}
+
+RC RelationManager::indexScan(const string &tableName,
+        const string &attributeName,
+        const void *lowKey,
+        const void *highKey,
+        bool lowKeyInclusive,
+        bool highKeyInclusive,
+        RM_IndexScanIterator &rm_IndexScanIterator){
+	IXFileHandle ixfileHandle;
+	vector<Attribute> attrs;
+	if(ixm ->openFile(tableName + "_" + attributeName + "_index", ixfileHandle) == -1)
+		return -1;
+	getAttributes(tableName, attrs);
+	int size = attrs.size();
+	Attribute attr;
+	for(int i = 0; i < size; i ++){
+		if(attrs[i].name == attributeName){
+			attr = attrs[i];
+			break;
+		}
+	}
+	rm_IndexScanIterator.indexScan(ixfileHandle, attr, lowKey, highKey, lowKeyInclusive, highKeyInclusive);
+    return 0;
+}
+
+RC RM_ScanIterator::getNextTuple(RID &rid, void *data) {
+    if(rbfm_ScanIterator.getNextRecord(rid,data)==RM_EOF){
+    	// cout<<"In RM_ScanIterator::getNextTuple, Return -1."<<endl;
+        return -1;
+    }
+    return 0;
+};
+
+RC RM_ScanIterator::close(){
+	return rbfm_ScanIterator.close();
+}
+
+RC RM_ScanIterator::scan(FileHandle &fileHandle,
+        const vector<Attribute> &recordDescriptor,
+        const string &conditionAttribute,
+        const CompOp compOp,
+        const void *value,
+        const vector<string> &attributeNames){
+    // cout<<"In RM_ScanIterator::scan---------------------------"<<endl;
+    RecordBasedFileManager* rbfm = RecordBasedFileManager::instance();
+    rbfm->scan(fileHandle, recordDescriptor, conditionAttribute, compOp, value, attributeNames, rbfm_ScanIterator);
+    return 0;
+}
+
+RC RM_IndexScanIterator::indexScan(IXFileHandle &ixfileHandle,
+                        const Attribute attr,
+                        const void *lowKey,
+                        const void *highKey,
+                        bool lowKeyInclusive,
+                        bool highKeyInclusive){
+	IndexManager *ixm = IndexManager::instance();
+	ixm->scan(ixfileHandle, attr, lowKey, highKey, lowKeyInclusive, highKeyInclusive, ix_ScanIterator);
+	return 0;
+}
+
+RC RM_IndexScanIterator::getNextEntry(RID &rid, void *key){
+    if(ix_ScanIterator.getNextEntry(rid, key)==RM_EOF){
+        return -1;
+    }
+    return 0;
+}
+
+RC RM_IndexScanIterator::close(){
+	return ix_ScanIterator.close();
+}
+
+// Extra credit work
+RC RelationManager::addAttribute(const string &tableName, const Attribute &attr)
+{
+	int tableID = getTableID(tableName);
+	addColumnsColumn(tableName, attr, tableID);
+    return 0;
+}
+
+int RelationManager::getTableID(const string &tableName){
+	int tableNameLength = tableName.size();
+	void *value = malloc(tableNameLength + sizeof(int));
+	memset(value, 0, tableNameLength + sizeof(int));
+	memcpy((char *)value , &tableNameLength, sizeof(int));
+	memcpy((char *)value + sizeof(int), tableName.c_str(), tableNameLength);
+
+	vector <string> attrNames;
+	attrNames.push_back("table-id");
+	FileHandle fileHandle;
+	RBFM_ScanIterator scanIterator;
+	rbfm ->openFile("Tables", fileHandle);
+	rbfm ->scan(fileHandle, tablesDescriptor, "table-name", EQ_OP, value, attrNames, scanIterator);
+	RID rid;
+
+	void *data = malloc(1 + sizeof(int));
+	memset(data, 0, 1 + sizeof(int));
+	int tableID;
+	while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+		unsigned char flag = 0;
+		memcpy(&flag, (char *)data, 1);
+		if(flag == 0x80)
+			return -1;
+		memcpy(&tableID, (char *)data + 1, sizeof(int));
+		memset(data, 0, 1 + sizeof(int));
+	}
+	free(data);
+	free(value);
+	rbfm -> closeFile(fileHandle);
+	scanIterator.close();
+	return tableID;
+}
+
+RC RelationManager::addColumnsColumn(const string &tableName, const Attribute &attr, const int &tableID){
+	FileHandle fileHandle;
+	RID rid;
+	string fileName = tableName;
+	rbfm ->openFile("Columns", fileHandle);
+	int length = calcLength(columnsDescriptor);
+	void *buffer = malloc(length);
+	memset(buffer, 0, length);
+	int offset = 0;
+	queue<unsigned char> nullDescriptor = initialNullDescriptor(columnsDescriptor);
+
+	int size = nullDescriptor.size();
+	for(int j = 0; j < size; j ++){
+		unsigned char temp = nullDescriptor.front();
+		memcpy((char *)buffer + offset, &temp, 1);
+		offset ++;
+		nullDescriptor.pop();
+		nullDescriptor.push(temp);
+	}
+	memcpy((char *)buffer + offset, &tableID, sizeof(int));
+	offset += sizeof(int);
+	int attrNameSize = (int)attr.name.size();
+	memcpy((char *)buffer + offset, &attrNameSize, sizeof(int));
+	offset += sizeof(int);
+	memcpy((char *)buffer + offset, attr.name.c_str(), attr.name.size());
+	offset += attr.name.size();
+	int typ = (int)attr.type;
+	memcpy((char *)buffer + offset, &typ, sizeof(int));
+	offset += sizeof(int);
+	int len = (int)attr.length;
+	memcpy((char *)buffer + offset, &len, sizeof(int));
+	offset += sizeof(int);
+	vector<Attribute> attrs;
+	getAttributes(tableName, attrs);
+	int pos = attrs.size() + 1;
+	memcpy((char *)buffer + offset, &pos, sizeof(int));
+	offset += sizeof(int);
+	void *data = malloc(offset);
+	memset(data, 0, offset);
+	memcpy((char *)data, (char *)buffer, offset);
+	rbfm ->insertRecord(fileHandle, columnsDescriptor, data, rid);
+	free(data);
+	free(buffer);
+	rbfm ->closeFile(fileHandle);
+
+	return 0;
+}
+
+// Extra credit work
+RC RelationManager::dropAttribute(const string &tableName, const string &attributeName)
+{
+	int attrNameLength = attributeName.size();
+	void *value = malloc(attrNameLength + sizeof(int));
+	memset(value, 0, attrNameLength + sizeof(int));
+	memcpy((char *)value , &attrNameLength, sizeof(int));
+	memcpy((char *)value + sizeof(int), attributeName.c_str(), attrNameLength);
+
+	int tableID = getTableID(tableName);
+	RBFM_ScanIterator scanIterator;
+	FileHandle fileHandle;
+	vector<string> attrNames;
+	attrNames.push_back("table-id");
+	attrNames.push_back("column-name");
+	attrNames.push_back("column-type");
+	attrNames.push_back("column-length");
+	attrNames.push_back("column-position");
+	rbfm ->openFile("Columns", fileHandle);
+	rbfm ->scan(fileHandle, columnsDescriptor, "table-id", EQ_OP, &tableID, attrNames, scanIterator);
+	RID rid;
+
+	int length = attributeName.length();
+	int columnsDescriptorLength = calcLength(columnsDescriptor);
+	void *data = malloc(columnsDescriptorLength);
+	char *name = new char[length+1];
+	name[length] = '\0';
+	memset(data, 0, columnsDescriptorLength);
+	while (scanIterator.getNextRecord(rid, data) != RBFM_EOF) {
+		memcpy(name, (char *)data + 1 + 2 * sizeof(int), length);
+		if(string(name) == attributeName){
+			int zero = 0;
+			memcpy((char *)data + 1 + 2 * sizeof(int) + length + sizeof(int), &zero, sizeof(int));
+			updateColumnsTuple(data, rid);
+			free(data);
+			free(name);
+			return 0;
+		}
+		memset(data, 0, columnsDescriptorLength);
+	}
+	free(data);
+	free(name);
+	return -1;
+}
+
+RC RelationManager::updateColumnsTuple(const void *data, const RID &rid)
+{
+    FileHandle fileHandle;
+    if(rbfm ->openFile("Columns", fileHandle) == -1)
+    	return -1;
+    RC res = rbfm ->updateRecord(fileHandle, columnsDescriptor, data, rid);
+    rbfm ->closeFile(fileHandle);
+    if (res == -1) {
+        return -1;
+    }
+    return 0;
+}

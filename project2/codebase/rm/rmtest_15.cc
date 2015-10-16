@@ -25,17 +25,17 @@ RC TEST_RM_15(const string &tableName)
 
     RID rid;
     void *returnedData = malloc(200);
+    // memset(returnedData, 0, 200);
 
     // Set up the iterator
     RM_ScanIterator rmsi;
     vector<string> projected_attrs;
-    for (int i = 0; i < attrs.size(); i++){
+    for (int i = 0; i < (int)attrs.size(); i++){
       projected_attrs.push_back(attrs[i].name);
     }
-
+    
     rc = rm->scan(tableName, "", NO_OP, NULL, projected_attrs, rmsi);
     assert(rc == success && "RelationManager::scan() should not fail.");
-
     int count = 0;
     while(rmsi.getNextTuple(rid, returnedData) != RM_EOF)
     {

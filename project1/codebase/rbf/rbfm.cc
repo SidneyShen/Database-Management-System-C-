@@ -3,6 +3,8 @@
 #include <math.h>
 #include <string.h>
 #include <iostream>
+#include <string>
+#include <vector>
 
 RecordBasedFileManager* RecordBasedFileManager::_rbf_manager = 0;
 
@@ -90,6 +92,7 @@ void RecordBasedFileManager::insertRecordIntoPage(void* curPageData, const void*
     slotInfo->slotLength = recordLength;    // Set record length to the slot info
     *getPageFreeSpacePointer(curPageData) = freeSpaceStart+recordLength;   // Set Page Information: free space start position.  
     *getPageSLotCountPointer(curPageData) = slotCount+1;
+    // cout<<"Check First Int Count = "<<*(int*)((char*)curPageData + freeSpaceStart)<<endl;
     return;
 }
 
@@ -116,11 +119,19 @@ bool RecordBasedFileManager::canInsert(void* pageData, int recordLength){
 
 
 int RecordBasedFileManager::addHeaderToRecord(const vector<Attribute> &recordDescriptor, void * newData, const void *rawData){
+    // cout<<"In Add Header To Record----------------"<<endl;
+    // cout<<"This should be nullDescriptor 0: "<<*(unsigned char*)rawData<<endl;
+    // cout<<"This should be INT 1: "<<*(int*)((char*)rawData+1)<<endl;
+    // cout<<"This should be first varchar header 6: "<<*(int*)((char*)rawData+5)<<endl;
+    // cout<<"This should be first varchar contant: t"<<*(char*)((char*)rawData+5)<<endl;
+    // cout<<"This should be second varchar header 6: "<<*(int*)((char*)rawData+15)<<endl;
+
+    // cout<<"attribute size = "<<recordDescriptor.size()<<endl;
     char *curData = (char *)newData;
     int fieldCount = (int)recordDescriptor.size();  // get field count
     int nullDescriptorLen = (int)(ceil)(fieldCount/8.0);  //get Null Descriptor Length in bytes;
     unsigned char * nullDescriptor = (unsigned char*) rawData;
-
+    // cout<<"Field Count: "<<fieldCount<<endl;
     // First 4 bytes: Field Count
     *(int*) curData = fieldCount;
     curData += sizeof(int);
@@ -130,7 +141,9 @@ int RecordBasedFileManager::addHeaderToRecord(const vector<Attribute> &recordDes
     curData += sizeof(int);
 
     int headerLength = (2 +fieldCount)*sizeof(int);
+    // cout<<"Header Length: "<<headerLength<<endl;
     int rawDataLength = nullDescriptorLen;
+    // cout<<"Raw Data Length: "<<rawDataLength<<endl;
 
     // Store each field end position
     for(int i=0; i<fieldCount; i++){
@@ -138,6 +151,7 @@ int RecordBasedFileManager::addHeaderToRecord(const vector<Attribute> &recordDes
         int pos = i/8;
         int j = i%8;
         if(nullDescriptor[pos] & (1<<(8-1-j))){ // The current attribute is NULL
+            // cout<<"Should not enter into this part!!!!!"<<endl;
             *(int*) curData = headerLength + rawDataLength;    //Current field end pos = previous position.
             // cout<<recordDescriptor[i].type<<"'s end position is "<<*(int*) curData<<endl;
             curData += sizeof(int);
@@ -153,7 +167,7 @@ int RecordBasedFileManager::addHeaderToRecord(const vector<Attribute> &recordDes
             curData += sizeof(int);
         }
     }
-
+    // cout<<"Raw Data Length: "<<rawDataLength<<endl;
     memcpy(curData, (char *)rawData, rawDataLength);
     return headerLength + rawDataLength;
 }
@@ -166,6 +180,7 @@ int RecordBasedFileManager::insertRecordHelper(FileHandle &fileHandle, const voi
     if(lastPage == 0){
         // cout<<"Append first Page!"<<endl;
         void *newPageData = malloc(PAGE_SIZE);
+        memset(newPageData,0,PAGE_SIZE);
         initNewPageData(newPageData);
         insertRecordIntoPage(newPageData, newData, recordLength, rid);
         fileHandle.appendPage(newPageData);
@@ -176,6 +191,7 @@ int RecordBasedFileManager::insertRecordHelper(FileHandle &fileHandle, const voi
 
     bool isInserted = false;
     void *curPageData = malloc(PAGE_SIZE);
+    memset(curPageData,0,PAGE_SIZE);
     fileHandle.readPage(lastPage-1, curPageData);
 
     if(canInsert(curPageData, recordLength)){
@@ -189,6 +205,7 @@ int RecordBasedFileManager::insertRecordHelper(FileHandle &fileHandle, const voi
         free(curPageData);
         for(int i=0; i<lastPage-1; i++){
             curPageData = malloc(PAGE_SIZE);
+            memset(curPageData,0,PAGE_SIZE);
             fileHandle.readPage(i, curPageData);
             if(canInsert(curPageData, recordLength)){
                 // cout<<"Add in Page "<<i<<endl;
@@ -207,6 +224,7 @@ int RecordBasedFileManager::insertRecordHelper(FileHandle &fileHandle, const voi
     if(!isInserted){
         // cout<<"Append a new page!"<<endl;
         void *newPageData = malloc(PAGE_SIZE);
+        memset(newPageData,0,PAGE_SIZE);
         initNewPageData(newPageData);
         insertRecordIntoPage(newPageData, newData, recordLength, rid);
         fileHandle.appendPage(newPageData);
@@ -219,7 +237,9 @@ int RecordBasedFileManager::insertRecordHelper(FileHandle &fileHandle, const voi
 
 RC RecordBasedFileManager::insertRecord(FileHandle &fileHandle, const vector<Attribute> &recordDescriptor, const void *data, RID &rid) {
     // cout<<"In insertRecord--------------"<<endl;
+    // cout<<"attribute size = "<<recordDescriptor.size()<<endl;
     void * newData = malloc(PAGE_SIZE);
+    memset(newData,0,PAGE_SIZE);
     int recordLength = addHeaderToRecord(recordDescriptor, newData, data);
     // cout<<"record length: "<<recordLength<<endl;
     insertRecordHelper(fileHandle, newData, rid, recordLength);
@@ -227,50 +247,219 @@ RC RecordBasedFileManager::insertRecord(FileHandle &fileHandle, const vector<Att
     return 0;
 }
 
+// void RecordBasedFileManager::readRecordWithAddedAttr(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data){
+//     int oldFieldCount = *(int*)storedRecord;
+//     int newFieldCount = recordDescriptor.size();
+//     // int fieldCountDiff = newFieldCount - oldFieldCount;
+//     int oldNullDescriptorLen = (int)ceil(oldFieldCount/8.0);
+//     int newNullDescriptorLen = (int)ceil(newFieldCount/8.0);
+//     int nullDescriptorLenDiff = newNullDescriptorLen - oldNullDescriptorLen;
 
-void RecordBasedFileManager::removeHeaderFromRecord(char* storedRecord, void* originalRecord){
-    // cout<<"In removeHeaderFromRecord()"<<endl;
-    int fieldCount = *(int*)storedRecord;
-    // cout<<"fieldCount = "<<fieldCount<<endl;
-    int headerLength = (2+fieldCount)*sizeof(int);
-    // cout<<"headerLength = "<<headerLength<<endl;
-    int recordEndPos = *(int*)(storedRecord + headerLength - sizeof(int));
-    // cout<<"recordEndPos = "<<recordEndPos<<endl;
-    int originalRecordLength = recordEndPos - headerLength;
-    // cout<<"originalRecordLength = "<<originalRecordLength<<endl;
-    storedRecord += headerLength;
-    // unsigned int shouldBeNullDescriptor = (unsigned int)*storedRecord;
-    // cout<<"Should be 40 : "<<shouldBeNullDescriptor<<endl;
-    memcpy((char*)originalRecord, storedRecord, originalRecordLength);
-    // cout<<"returned record size : "<<originalRecordLength<<endl;
+//     int headerLength = (2+oldFieldCount)*sizeof(int);
+//     int recordEndPos = *(int*)(storedRecord + headerLength - sizeof(int));
+//     int originalRecordLength = recordEndPos - headerLength;
+
+//     storedRecord += headerLength;
+//     // Start Copy NullDescriptor from storedRecord to data
+//     memcpy((char*)data, storedRecord, oldNullDescriptorLen);
+//     int numOfBitLeftInTheLastByte = 8-(oldFieldCount%8);
+//     // Not very precise method, but works!!! Set all the left bit to be 1 to fill the entire last byte of nulldescriptor
+//     while(numOfBitLeftInTheLastByte > 0 && numOfBitLeftInTheLastByte < 8){
+//         *((char*)data + oldNullDescriptorLen - sizeof(char)) |= (1<<(numOfBitLeftInTheLastByte-1));
+//         numOfBitLeftInTheLastByte--;
+//     }
+
+//     int count = 0;
+//     while(nullDescriptorLenDiff > 0){
+//         memset((char*)data + oldNullDescriptorLen + count, 0xff, sizeof(char));
+//         count++;
+//         nullDescriptorLenDiff--;
+//     }
+
+//     // Copy data without nulldescriptor part
+//     memcpy((char*)data + newNullDescriptorLen, storedRecord + oldNullDescriptorLen, originalRecordLength-oldNullDescriptorLen);
+
+//     return;
+// }
+
+// void RecordBasedFileManager::readRecordWithDeletedAttr(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data){
+
+//     int oldFieldCount = *(int*)storedRecord;
+//     int oldNullDescriptorLen = (int)ceil(oldFieldCount/8.0);
+
+//     int headerLength = (2+oldFieldCount)*sizeof(int);
+//     int recordEndPos = *(int*)(storedRecord + headerLength - sizeof(int));
+//     int originalRecordLength = recordEndPos - headerLength;
+
+//     storedRecord += headerLength;
+//     char * nullDescriptor = storedRecord;
+
+//     vector<bool> bitInNullDescriptor;
+//     for(int i=0; i<oldFieldCount; i++){
+//         int pos = i/8;
+//         int j = i%8;
+//         bool curBit = (nullDescriptor[pos] & (1<<(8-1-j)));
+//         bitInNullDescriptor.push_back(curBit);
+//     }
+
+//     // Remove the bit of deleted attribute in the nulldescriptor
+//     for(int i=0; i<(int)recordDescriptor.size(); i++){
+//         if(recordDescriptor[i].length <= 0)
+//             bitInNullDescriptor.erase(bitInNullDescriptor.begin()+i);
+//     }
+
+//     char* newNullDescriptor = (char*) data;
+//     int newFieldCount = bitInNullDescriptor.size();
+//     int newNullDescriptorLen = (int)ceil(newFieldCount/8.0);
+
+//     // Generate new nulldescriptor
+//     for(int i=0; i<newFieldCount; i++){
+//         int pos = i/8;
+//         int j = i%8;
+//         if(bitInNullDescriptor.at(i)){
+//             newNullDescriptor[pos] |= (1<<(8-1-j));
+//         }
+//     }
+
+//     // Copy data without original nulldescriptor part
+//     memcpy((char*)data + newNullDescriptorLen, storedRecord + oldNullDescriptorLen, originalRecordLength - oldNullDescriptorLen);
+//     return;
+// }
+
+
+// void RecordBasedFileManager::removeHeaderFromRecord(char* storedRecord, void* originalRecord){
+//     // cout<<"In removeHeaderFromRecord()"<<endl;
+//     int fieldCount = *(int*)storedRecord;
+//     // cout<<"fieldCount = "<<fieldCount<<endl;
+//     int headerLength = (2+fieldCount)*sizeof(int);
+//     // cout<<"headerLength = "<<headerLength<<endl;
+//     int recordEndPos = *(int*)(storedRecord + headerLength - sizeof(int));
+//     // cout<<"recordEndPos = "<<recordEndPos<<endl;
+//     int originalRecordLength = recordEndPos - headerLength;
+//     // cout<<"originalRecordLength = "<<originalRecordLength<<endl;
+//     storedRecord += headerLength;
+//     // unsigned int shouldBeNullDescriptor = (unsigned int)*storedRecord;
+//     // cout<<"Should be 40 : "<<shouldBeNullDescriptor<<endl;
+//     memcpy((char*)originalRecord, storedRecord, originalRecordLength);
+//     // cout<<"returned record size : "<<originalRecordLength<<endl;
+//     return;
+// }
+
+void RecordBasedFileManager::constructReturnRecord(char* storedRecord, const vector<Attribute> &recordDescriptor, void* data){
+    int oldFieldCount = *(int*)storedRecord;
+    int newFieldCount = recordDescriptor.size();
+
+    int headerLength = (2+oldFieldCount)*sizeof(int);
+
+    void* finalNullDescriptor = malloc(100);
+    memset(finalNullDescriptor,0,100);
+    void* finalRecordData = malloc(PAGE_SIZE);
+    memset(finalRecordData,0,PAGE_SIZE);
+
+
+    int finalNullDescriptorAttrCount = 0;   // in bit
+    int fieldDataOffset = 0;
+    int oldFieldPointer = 0;    // in bit
+
+    while(oldFieldPointer < oldFieldCount){
+        void* tempAttrData = malloc(PAGE_SIZE);
+        memset(tempAttrData,0,PAGE_SIZE);
+        if(recordDescriptor[oldFieldPointer].length > 0){
+            cout<<"in if loop!"<<endl;
+            readAttributeHelper(storedRecord, oldFieldPointer, tempAttrData);
+
+            int pos_byte = finalNullDescriptorAttrCount/8; // [0, nullDescriptorLen-1]
+            int pos_bit = finalNullDescriptorAttrCount%8;  // [0,7]
+
+            if((*(char*)tempAttrData ^ 0x80) == 0){
+                cout<<"find a null attribute"<<endl;
+                *((char*)finalNullDescriptor+pos_byte) |= (1<<(7-pos_bit));     // if null, set corresponding bit to 1
+            }
+            finalNullDescriptorAttrCount++;
+            cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+            int len;
+            if((*(char*)tempAttrData ^ 0x80) == 0)
+                len = 0;
+            else{
+                switch(recordDescriptor[oldFieldPointer].type){
+                    case TypeVarChar:
+                        len = sizeof(int) + *(int*) ((char*)tempAttrData + sizeof(char));
+                        break;
+                    case TypeInt:
+                        len = sizeof(int);
+                        break;
+                    case TypeReal:
+                        len = sizeof(int);
+                        break;
+                }
+            }
+            cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
+            memcpy((char*)finalRecordData+fieldDataOffset, (char*)tempAttrData + sizeof(char), len);
+            fieldDataOffset += len;
+        }
+        cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"<<endl;
+        free(tempAttrData);
+        cout<<"asdfasdfadsfasdfasdfasdfasdfasfadsfasdfadfasfas"<<endl;
+        oldFieldPointer++;
+    }
+    // cout<<"before free tempAttrData"<<endl;
+
+
+    int newFieldPointer = oldFieldPointer;
+    while(newFieldPointer < newFieldCount){
+        cout<<"should not come to this while loop!"<<endl;
+        if(recordDescriptor[newFieldPointer].length > 0){
+            int pos_byte = finalNullDescriptorAttrCount/8; // [0, nullDescriptorLen-1]
+            int pos_bit = finalNullDescriptorAttrCount%8;  // [0,7]
+            *((char*)finalNullDescriptor+pos_byte) |= (1<<(7-pos_bit));
+            finalNullDescriptorAttrCount++;
+        }
+
+        newFieldPointer++;
+    }
+
+    int finalNullDescriptorLenInByte = (int)ceil(finalNullDescriptorAttrCount/8.0);
+
+    memcpy((char*)data, (char*)finalNullDescriptor, finalNullDescriptorLenInByte);
+    memcpy((char*)data+finalNullDescriptorLenInByte, (char*)finalRecordData, fieldDataOffset);
+    cout<<"before free finalRecordData"<<endl;
+    free(finalRecordData);
+    cout<<"before free finalNullDescriptor"<<endl;
+    free(finalNullDescriptor);
+    cout<<"before return"<<endl;
     return;
 }
 
 int RecordBasedFileManager::readMigrateRecord(FileHandle &fileHandle, const int pageNumber, const int slotNumber, char* recordData){
-    // cout<<"In readMifrateRecord()"<<endl;
+    // cout<<"In RecordBasedFileManager::readMigrateRecord()"<<endl;
     void* pageData = malloc(PAGE_SIZE);
+    memset(pageData,0,PAGE_SIZE);
     RC rc = fileHandle.readPage(pageNumber, pageData);
     if (rc != 0) {
         free(pageData);
         return -1;
     }
     int slotCount = getPageSlotCount(pageData);
+    // cout<<"slot count = "<<slotCount<<endl;
     if(slotCount<=slotNumber){
-        perror("The Slot ID does not exist");
+        // perror("The Slot ID does not exist");
         return -1;
     }
 
     SlotInfo* slotInfo = getSlotInfoPointer(pageData, slotNumber);
-    // cout<<"status : "<<status<<endl;
-    // cout<<"recordStartPos : "<<recordStartPos<<endl;
+    // cout<<"status : "<<slotInfo->status<<endl;
+    // cout<<"recordStartPos : "<<slotInfo->slotStartPos<<endl;
     switch(slotInfo->status){
         case 0:{// deleted record
-            perror("The record has been deleted");
+            // perror("The record has been deleted");
             free(pageData);
             return -1;
         }
         case 1:{// normal record
+            // cout<<"before memcpy():"<<endl;
+            // cout<<"First Int Count = "<<*(int*)((char*)pageData + slotInfo->slotStartPos)<<endl;
             memcpy(recordData, (char*)pageData + slotInfo->slotStartPos, slotInfo->slotLength);
+            // cout<<"after memcpy()"<<endl;
             free(pageData);
             return 0;
         }
@@ -290,20 +479,54 @@ int RecordBasedFileManager::readMigrateRecord(FileHandle &fileHandle, const int 
 
 
 RC RecordBasedFileManager::readRecord(FileHandle &fileHandle, const vector<Attribute> &recordDescriptor, const RID &rid, void *data) {
-    // cout<<"In readRecord()"<<endl;
+    // cout<<"In RecordBasedFileManager::readRecord()"<<endl;
+
     char* recordData = (char*)malloc(PAGE_SIZE);
+    memset(recordData,0,PAGE_SIZE);
+    // cout<<"rid.pageNum = "<<rid.pageNum<<endl;
+    // cout<<"rid.slotNum = "<<rid.slotNum<<endl;
     int result = readMigrateRecord(fileHandle, rid.pageNum, rid.slotNum, recordData);
     if(result != 0){
-        perror("Read Record Error!");
+        // perror("Read Record Error!");
         return -1;
     }
-    removeHeaderFromRecord(recordData, data);
+
+    constructReturnRecord(recordData, recordDescriptor, data);
+
+    // int oldAttrNum = getOriginalDataAttrNum(recordData);
+    // int newAttrNum = recordDescriptor.size();
+
+    // if(oldAttrNum < newAttrNum){
+    //     readRecordWithAddedAttr(recordData, recordDescriptor, data);
+    // }else{
+    //     bool flag = false;
+
+    //     for(int i=0; i<newAttrNum; i++){
+    //         if(recordDescriptor[i].length == 0){
+    //             readRecordWithDeletedAttr(recordData, recordDescriptor, data);
+    //             flag = true;
+    //             break;
+    //         }
+    //     }
+
+    //     if(!flag)
+    //         removeHeaderFromRecord(recordData, data);
+    // }
+
+    // removeHeaderFromRecord(recordData, data);
     free(recordData);
     return 0;
 }
 
+int RecordBasedFileManager::getOriginalDataAttrNum(char* recordData){
+    int fieldCount = *(int*) recordData;
+    return fieldCount;
+}
+
 
 RC RecordBasedFileManager::printRecord(const vector<Attribute> &recordDescriptor, const void *data) {
+    cout<<"\n\n\n\n";
+    cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
     char *curData = (char*) data;
     int attrSize = recordDescriptor.size();
     int nullDescriptorLen = (int)ceil(attrSize/8.0);
@@ -345,12 +568,14 @@ RC RecordBasedFileManager::printRecord(const vector<Attribute> &recordDescriptor
             }
         }
     }
-
+    cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
+    cout<<"\n\n\n\n";
     return 0;
 }
 
 void RecordBasedFileManager::expandFreeSpace(void* pageData){
     void* newPageData = malloc(PAGE_SIZE);
+    memset(newPageData,0,PAGE_SIZE);
     int slotCount = getPageSlotCount(pageData);
     int curPos = 0;
     for(int i=0; i<slotCount; i++){
@@ -369,6 +594,7 @@ void RecordBasedFileManager::expandFreeSpace(void* pageData){
 
 int RecordBasedFileManager::deleteMigrateRecord(FileHandle &fileHandle, const int pageNumber, const int slotNumber){
     void* pageData = malloc(PAGE_SIZE);
+    memset(pageData,0,PAGE_SIZE);
     RC rc = fileHandle.readPage(pageNumber, pageData);
     if (rc != 0) {
         free(pageData);
@@ -376,7 +602,7 @@ int RecordBasedFileManager::deleteMigrateRecord(FileHandle &fileHandle, const in
     }
     int slotCount = getPageSlotCount(pageData);
     if(slotCount<=slotNumber){
-        perror("The Slot ID does not exist");
+        // perror("The Slot ID does not exist");
         return -1;
     }
 
@@ -385,7 +611,7 @@ int RecordBasedFileManager::deleteMigrateRecord(FileHandle &fileHandle, const in
     // cout<<"recordStartPos : "<<recordStartPos<<endl;
     switch(slotInfo->status){
         case 0:{// deleted record
-            perror("The record has been deleted");
+            // perror("The record has been deleted");
             free(pageData);
             return -1;
         }
@@ -424,6 +650,7 @@ RC RecordBasedFileManager::deleteRecord(FileHandle &fileHandle, const vector<Att
 
 void RecordBasedFileManager::shrinkFreeSpace(void* pageData, const int slotNumber, void* updateData, const int recordLength){
     void* newPageData = malloc(PAGE_SIZE);
+    memset(newPageData,0,PAGE_SIZE);
     int slotCount = getPageSlotCount(pageData);
     int curPos = 0;
     for(int i=0; i<slotCount; i++){
@@ -483,6 +710,7 @@ int RecordBasedFileManager::updateRecordInThisPage(FileHandle &fileHandle, void*
 
 int RecordBasedFileManager::updateMigrateRecord(FileHandle &fileHandle, const int pageNumber, const int slotNumber, void *updateData, const int recordLength){
     void* pageData = malloc(PAGE_SIZE);
+    memset(pageData,0,PAGE_SIZE);
     RC rc = fileHandle.readPage(pageNumber, pageData);
     if (rc != 0) {
         free(pageData);
@@ -490,14 +718,14 @@ int RecordBasedFileManager::updateMigrateRecord(FileHandle &fileHandle, const in
     }
     int slotCount = getPageSlotCount(pageData);
     if(slotCount<=slotNumber){
-        perror("The Slot ID does not exist");
+        // perror("The Slot ID does not exist");
         return -1;
     }
 
     SlotInfo* slotInfo = getSlotInfoPointer(pageData, slotNumber);
     switch(slotInfo->status){
         case 0:{// deleted record
-            perror("The record has been deleted");
+            // perror("The record has been deleted");
             free(pageData);
             return -1;
         }
@@ -521,12 +749,15 @@ int RecordBasedFileManager::updateMigrateRecord(FileHandle &fileHandle, const in
 
 RC RecordBasedFileManager::updateRecord(FileHandle &fileHandle, const vector<Attribute> &recordDescriptor, const void *data, const RID &rid){
     void * newData = malloc(PAGE_SIZE);
+    memset(newData,0,PAGE_SIZE);
     int recordLength = addHeaderToRecord(recordDescriptor, newData, data);
     int result = updateMigrateRecord(fileHandle, rid.pageNum, rid.slotNum, newData, recordLength);
     return result;
 }
 
 int RecordBasedFileManager::readAttributeHelper(char* recordData, int attrID, void* data){
+    cout<<"Start of readAttributeHelper--------------------"<<endl;
+    cout<<"attrID = "<<attrID<<endl;
     int fieldCount = *(int*)recordData;
     int nullDescriptorLen = *(int*)(recordData + sizeof(int));
     int field_start_pos = (2+fieldCount)*sizeof(int)+nullDescriptorLen;
@@ -534,20 +765,25 @@ int RecordBasedFileManager::readAttributeHelper(char* recordData, int attrID, vo
     if(attrID > 0)  // The start position is the end positon of previous attribute
         field_start_pos = *(int*)(recordData + sizeof(int)*(2+attrID-1));
     int field_length = field_end_pos - field_start_pos;
-    if(field_length<=0)
+    cout<<"field_length = "<<field_length<<endl;
+    if(field_length<=0){
         *(char*)data = 0x80;    // The field does not has data, which means the field is null.
+        cout<<"data = "<<*(char*)data<<endl;
+    }
     else{
         *(char*)data = 0x00;
         memcpy((char*)data+sizeof(char), recordData+field_start_pos, field_length);
     }
+    cout<<"End of readAttributeHelper--------------------"<<endl;
     return 0;
 }
 
 RC RecordBasedFileManager::readAttribute(FileHandle &fileHandle, const vector<Attribute> &recordDescriptor, const RID &rid, const string &attributeName, void *data){
     char* recordData = (char*)malloc(PAGE_SIZE);
+    memset(recordData,0,PAGE_SIZE);
     int result = readMigrateRecord(fileHandle, rid.pageNum, rid.slotNum, recordData);
     if(result != 0){
-        perror("Read Record Error!");
+        // perror("Read Record Error!");
         return -1;
     }
     for(unsigned i=0; i<recordDescriptor.size(); i++){
@@ -570,13 +806,15 @@ RC RecordBasedFileManager::scan(FileHandle &fileHandle,
       const void *value,                    // used in the comparison
       const vector<string> &attributeNames, // a list of projected attributes
       RBFM_ScanIterator &rbfm_ScanIterator){
-
+    // cout<<"condition attribute name = "<<conditionAttribute<<endl;
     rbfm_ScanIterator.fileHandle = fileHandle;
     rbfm_ScanIterator.recordDescriptor = recordDescriptor;
     rbfm_ScanIterator.conditionAttribute = conditionAttribute;
     rbfm_ScanIterator.compOp = compOp;
     rbfm_ScanIterator.attributeNames = attributeNames;
-
+    
+    // cout<<"In RBFM Scan--------------------"<<endl;
+    // cout<<"condition attribute name = "<<conditionAttribute<<endl;
     getConditionAttr(recordDescriptor, conditionAttribute, rbfm_ScanIterator);
     if(compOp != NO_OP){
         getValue(value, rbfm_ScanIterator);
@@ -584,7 +822,13 @@ RC RecordBasedFileManager::scan(FileHandle &fileHandle,
 
     rbfm_ScanIterator.nextRID.pageNum = 0;
     rbfm_ScanIterator.nextRID.slotNum = 0;
-
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<fileHandle.getNumberOfPages()<<endl;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<rbfm_ScanIterator.fileHandle.getNumberOfPages()<<endl;
+    // cout<<"||||||||||||||||||||||||||||||||||||||||||||||||||||"<<endl;
+    // cout<<"RBFM:: Scan Return"<<endl;
     return 0;
 }
 
@@ -597,6 +841,7 @@ int RecordBasedFileManager::getConditionAttr(const vector<Attribute> &recordDesc
     for(unsigned i=0; i<recordDescriptor.size(); i++){
         if(recordDescriptor[i].name == conditionAttribute){
             rbfm_ScanIterator.conditionAttributeID = i;
+            // cout<<"condition attribute name = "<<conditionAttribute<<", condition attribute id = "<<i<<endl;
             rbfm_ScanIterator.conditionAttributeType = recordDescriptor[i].type;
             break;
         }
@@ -609,16 +854,19 @@ int RecordBasedFileManager::getValue(const void* value, RBFM_ScanIterator &rbfm_
         case TypeVarChar:{
             int dataLength = *(int*) value + sizeof(int);
             rbfm_ScanIterator.value = malloc(dataLength);
+            memset(rbfm_ScanIterator.value,0,dataLength);
             memcpy((char*)rbfm_ScanIterator.value, (char*)value, dataLength);
             break;
         }
         case TypeInt:{
             rbfm_ScanIterator.value = malloc(sizeof(int));
+            memset(rbfm_ScanIterator.value,0,sizeof(int));
             *(int*)rbfm_ScanIterator.value = *(int*)value;
             break;
         }
         case TypeReal:{
             rbfm_ScanIterator.value = malloc(sizeof(int));
+            memset(rbfm_ScanIterator.value,0,sizeof(int));
             *(int*)rbfm_ScanIterator.value = *(int*)value;
             break;   
         }
@@ -630,12 +878,22 @@ int RecordBasedFileManager::getValue(const void* value, RBFM_ScanIterator &rbfm_
 
 RC RBFM_ScanIterator::getNextRecord(RID &rid, void *data){
 
+    // cout<<"RBFM_ScanIterator::getNextRecord------------------"<<endl;
+
     RecordBasedFileManager *rbfm = RecordBasedFileManager::instance();
 
     RC returnVal = 0;
 
     void* pageData = malloc(PAGE_SIZE);
     void* recordData = malloc(PAGE_SIZE);
+    memset(pageData, 0, PAGE_SIZE);
+    memset(recordData, 0, PAGE_SIZE);
+    // int lastPage = fileHandle.getNumberOfPages();
+
+    // cout<<"Break point 1:"<<endl;
+    // cout<<"nextRID.pageNum = "<<nextRID.pageNum<<endl;
+    // cout<<"nextRID.slotNum = "<<nextRID.slotNum<<endl;
+    // cout<<"total number of file pages = "<<lastPage<<endl;
 
     if(fileHandle.readPage(nextRID.pageNum, pageData)<0){
         free(pageData);
@@ -643,12 +901,12 @@ RC RBFM_ScanIterator::getNextRecord(RID &rid, void *data){
         return RBFM_EOF;
     }
     unsigned slotCountOfPage = rbfm->getPageSlotCount(pageData);
-
+    // cout<<"Number of Slots in This Page = "<<slotCountOfPage<<endl;
     while(validateRecord(pageData, recordData)==false){
         gotoNextSlot(rid);
-        if((nextRID.slotNum+1) >= slotCountOfPage){
+        if(nextRID.slotNum >= slotCountOfPage){
             nextRID.pageNum++;
-            if((nextRID.pageNum+1) >= fileHandle.getNumberOfPages()){
+            if(nextRID.pageNum >= fileHandle.getNumberOfPages()){
                 returnVal = RBFM_EOF;
                 break;
             }
@@ -666,15 +924,22 @@ RC RBFM_ScanIterator::getNextRecord(RID &rid, void *data){
     free(pageData);
     free(recordData);
 
+    // cout<<"nextRID.pageNum = "<<nextRID.pageNum<<", nextRID.slotNum = "<<nextRID.slotNum<<endl;
+    // cout<<"return value = "<<returnVal<<endl;
+    // cout<<endl;
+    // cout<<endl;
     return returnVal;
 }
 
 int RBFM_ScanIterator::getResultData(void* recordData, void* data){
+    // cout<<"In RBFM_ScanIterator::getResultData---------------"<<endl;
+
     RecordBasedFileManager *rbfm = RecordBasedFileManager::instance();
     int nullDescriptorLen = (int)(ceil)(attributeNames.size()/8.0);
     // int numOfAttr = attributeNames.size();
     int curAttrCount = 0;   // used as a marker which bit should to be set
-    void* tempAttrData = malloc(500);
+    void* tempAttrData = malloc(PAGE_SIZE);
+    memset(tempAttrData,0,PAGE_SIZE);
     // int len;
     int offset = nullDescriptorLen;    // used as the position offset for next memcpy
 
@@ -685,6 +950,7 @@ int RBFM_ScanIterator::getResultData(void* recordData, void* data){
                 curAttrCount++;
                 rbfm->readAttributeHelper((char*)recordData, j, tempAttrData);
                 concatenateResult(tempAttrData, recordDescriptor[j].type, offset, curAttrCount, data);
+                break;
             }
         }
     }
@@ -694,13 +960,18 @@ int RBFM_ScanIterator::getResultData(void* recordData, void* data){
 }
 
 int RBFM_ScanIterator::concatenateResult(void* attrData, AttrType type, int &offset, int attrCount, void* data){
+    // cout<<"In RBFM_ScanIterator::concatenateResult-----------------"<<endl;
     int pos_byte = (attrCount-1)/8; // [0, nullDescriptorLen-1]
+    // cout<<"pos_byte = "<<pos_byte<<endl;
     int pos_bit = (attrCount-1)%8;  // [0,7]
-    if(*(char*)attrData == 0x80)
+    // cout<<"pos_bit = "<<pos_bit<<endl;
+    if((*(char*)attrData ^ 0x80) == 0){
         *((char*)data+pos_byte) |= (1<<(7-pos_bit));     // if null, set corresponding bit to 1
-    
+        // cout<<"CHECK NULL!!!!"<<*((char*)data+pos_byte)<<endl;
+    }
+    // cout<<"first byte of attrData"<<*(char*)data<<endl;
     int len;
-    if(*(char*)attrData == 0x80)
+    if((*(char*)attrData ^ 0x80) == 0)
         len = 0;
     else{
         switch(type){
@@ -716,7 +987,7 @@ int RBFM_ScanIterator::concatenateResult(void* attrData, AttrType type, int &off
         }
     }
 
-    memcpy((char*)data+offset, (char*)attrData+1, len);
+    memcpy((char*)data+offset, (char*)attrData + sizeof(char), len);
     offset += len;
     return 0;
 }
@@ -728,6 +999,7 @@ void RBFM_ScanIterator::gotoNextSlot(RID &rid){
 }
 
 bool RBFM_ScanIterator::validateRecord(void* pageData, void* recordData){
+    // cout<<"In RBFM_ScanIterator::validateRecord--------------"<<endl;
     if(checkSlotStatus(pageData)==false)    // The slot is deleted or migrated
         return false;
     if(checkRecordRequirement(pageData, recordData)==false)
@@ -736,9 +1008,10 @@ bool RBFM_ScanIterator::validateRecord(void* pageData, void* recordData){
 }
 
 bool RBFM_ScanIterator::checkSlotStatus(void* pageData){
+    // cout<<"In RBFM_ScanIterator::checkSlotStatus--------------"<<endl;
     RecordBasedFileManager *rbfm = RecordBasedFileManager::instance();
     unsigned slotCountOfPage = rbfm->getPageSlotCount(pageData);
-    if((nextRID.slotNum+1)>=slotCountOfPage)
+    if(nextRID.slotNum>=slotCountOfPage)
         return false;
     SlotInfo* slotInfo = rbfm->getSlotInfoPointer(pageData, nextRID.slotNum);
     if(slotInfo->status != 1)   // The slot is deleted or migrated
@@ -751,6 +1024,7 @@ bool RBFM_ScanIterator::checkRecordRequirement(void* pageData, void* recordData)
     rbfm->readMigrateRecord(fileHandle, nextRID.pageNum, nextRID.slotNum, (char*)recordData);
 
     void* attrData = malloc(500);
+    memset(attrData,0,500);
     rbfm->readAttributeHelper((char*)recordData, conditionAttributeID, attrData);
 
     if(checkAttribute(value, attrData)==false){
@@ -763,7 +1037,8 @@ bool RBFM_ScanIterator::checkRecordRequirement(void* pageData, void* recordData)
 
 bool RBFM_ScanIterator::checkAttribute(void* value, void* attrData){
     // The returned attribute data has an one-byte null descriptor header.
-    if(*(char*)attrData == 0x80)    // The attribute data is null.
+    // cout<<"In RBFM_ScanIterator::checkAttribute---------------------------"<<endl;
+    if((*(char*)attrData ^ 0x80) == 0)    // The attribute data is null.
         return false;
     if(compOp == NO_OP)
         return true;
@@ -771,11 +1046,14 @@ bool RBFM_ScanIterator::checkAttribute(void* value, void* attrData){
     int result;
     switch (conditionAttributeType) {
         case TypeVarChar:{   
+                // cout<<"checking varchar now!!!!!!!!!!!!!!!"<<endl;
                 int valueLength = *(int*) value;  // Length without head.
                 string valueStr = string((char*)((char*)value + sizeof(int)),valueLength);
                 int attrLength = *(int*) ((char*)attrData + sizeof(char));
-                string  attrstr = string((char*)((char*)attrData + sizeof(int)), attrLength);  // Skip null descriptor (one byte) and varchar head (one int)
+                string attrstr = string((char*)((char*)attrData + sizeof(int)+ sizeof(char)), attrLength);  // Skip null descriptor (one byte) and varchar head (one int)
                 result = attrstr.compare(valueStr);
+                // cout<<"stored compared string: "<<valueStr<<endl;
+                // cout<<"attribute string: "<<attrstr<<endl;
                 break;
             }
         case TypeInt:
@@ -791,6 +1069,7 @@ bool RBFM_ScanIterator::checkAttribute(void* value, void* attrData){
             return true;
             break;
         case EQ_OP:
+            // cout<<"in EQ_OP result = "<<result<<endl;
             return(result == 0);
             break;
         case LT_OP:
@@ -815,7 +1094,7 @@ bool RBFM_ScanIterator::checkAttribute(void* value, void* attrData){
 
 RC RBFM_ScanIterator::close()
 {
-    PagedFileManager::instance()->closeFile(fileHandle);
+    // PagedFileManager::instance()->closeFile(fileHandle);
     if(compOp != NO_OP)
     {
         free(value);

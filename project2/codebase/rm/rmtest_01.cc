@@ -19,6 +19,7 @@ RC TEST_RM_1(const string &tableName, const int nameLength, const string &name, 
 
     // Initialize a NULL field indicator
     int nullAttributesIndicatorActualSize = getActualByteForNullsIndicator(attrs.size());
+    cout<<"nullAttributesIndicatorActualSize"<<nullAttributesIndicatorActualSize<<endl;
     unsigned char *nullsIndicator = (unsigned char *) malloc(nullAttributesIndicatorActualSize);
 	memset(nullsIndicator, 0, nullAttributesIndicatorActualSize);
 
@@ -30,7 +31,7 @@ RC TEST_RM_1(const string &tableName, const int nameLength, const string &name, 
     
     rc = rm->insertTuple(tableName, tuple, rid);
     assert(rc == success && "RelationManager::insertTuple() should not fail.");
-    
+    cout<<"In test case 1::after insertTuple!!!!"<<endl;
     // Given the rid, read the tuple from table
     rc = rm->readTuple(tableName, rid, returnedData);
     assert(rc == success && "RelationManager::readTuple() should not fail.");
